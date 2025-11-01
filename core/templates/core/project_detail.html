@@ -27,16 +27,26 @@
                 {% if user.user_type == 'client' and project.client == user %}
                 <div class="mt-4">
                     <a href="{% url 'core:project_proposals' project.id %}" class="btn btn-primary">View Proposals ({{ project.proposals.count }})</a>
+                    {% if project.status == 'in_progress' %}
+                    <a href="{% url 'core:project_messages' project.id %}" class="btn btn-success">💬 Messages</a>
+                    {% endif %}
                 </div>
                 {% elif user.user_type == 'freelancer' %}
                 <div class="mt-4">
                     {% if can_submit_proposal %}
                     <a href="{% url 'core:proposal_create' project.id %}" class="btn btn-primary">Submit Proposal</a>
                     {% elif user_proposal %}
-                    <div class="alert alert-info">
-                        You have already submitted a proposal for this project.
-                        <a href="{% url 'core:proposal_list' %}">View your proposals</a>
-                    </div>
+                        {% if project.status == 'in_progress' and user_proposal.status == 'accepted' %}
+                        <div class="alert alert-success">
+                            Your proposal was accepted! 
+                            <a href="{% url 'core:project_messages' project.id %}" class="btn btn-sm btn-success">💬 Go to Messages</a>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info">
+                            You have already submitted a proposal for this project.
+                            <a href="{% url 'core:proposal_list' %}">View your proposals</a>
+                        </div>
+                        {% endif %}
                     {% else %}
                     <div class="alert alert-warning">This project is no longer accepting proposals.</div>
                     {% endif %}

@@ -16,6 +16,42 @@
             {% endif %}
         </div>
         
+        <!-- Search & Filter Form (Freelancers Only) -->
+        {% if user.user_type == 'freelancer' %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5>Search & Filter Projects</h5>
+                <form method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="search" class="form-label">Search</label>
+                        <input type="text" class="form-control" id="search" name="q" placeholder="Search title or description..." value="{{ query }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="min_budget" class="form-label">Min Budget</label>
+                        <input type="number" class="form-control" id="min_budget" name="min_budget" placeholder="$0" step="0.01" value="{{ min_budget }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="max_budget" class="form-label">Max Budget</label>
+                        <input type="number" class="form-control" id="max_budget" name="max_budget" placeholder="$10000" step="0.01" value="{{ max_budget }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="sort" class="form-label">Sort By</label>
+                        <select class="form-select" id="sort" name="sort">
+                            <option value="-created_at" {% if sort_by == '-created_at' %}selected{% endif %}>Newest First</option>
+                            <option value="created_at" {% if sort_by == 'created_at' %}selected{% endif %}>Oldest First</option>
+                            <option value="-budget" {% if sort_by == '-budget' %}selected{% endif %}>Budget High-Low</option>
+                            <option value="budget" {% if sort_by == 'budget' %}selected{% endif %}>Budget Low-High</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                        <a href="{% url 'core:project_list' %}" class="btn btn-secondary">Clear</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+        
         {% if projects %}
         <div class="row">
             {% for project in projects %}

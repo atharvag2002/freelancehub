@@ -1,5 +1,5 @@
 from django import forms
-from .models import Project, Proposal
+from .models import Project, Proposal, Message
 
 
 class ProjectForm(forms.ModelForm):
@@ -29,5 +29,19 @@ class ProposalForm(forms.ModelForm):
         labels = {
             'cover_letter': 'Cover Letter',
             'bid_amount': 'Bid Amount',
+        }
+
+
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ['content', 'attachment']
+        widgets = {
+            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Type your message...'}),
+            'attachment': forms.FileInput(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'content': 'Message',
+            'attachment': 'Attachment (optional)',
         }
 
