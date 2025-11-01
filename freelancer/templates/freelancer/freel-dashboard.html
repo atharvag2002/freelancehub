@@ -1,0 +1,485 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freelancer Dashboard - FreelanceHub</title>
+    <meta name="description" content="Find projects, submit proposals, and manage your freelance work">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style1.css' %}">
+    
+    <style>
+        /* Custom styles to match your design */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --primary-color: #f5576c;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        
+        .logo {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #1a1a1a;
+            text-decoration: none;
+        }
+        
+        .nav-link.active {
+            color: var(--primary-color) !important;
+            font-weight: 600;
+        }
+        
+        .sidebar {
+            background: var(--primary-gradient);
+            position: sticky;
+            top: 76px;
+            height: calc(100vh - 76px);
+            overflow-y: auto;
+        }
+        
+        .sidebar-nav .nav-link {
+            color: rgba(255,255,255,0.9);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.25rem;
+        }
+        
+        .sidebar-nav .nav-link:hover, .sidebar-nav .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .sidebar-nav .nav-link.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .profile-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            height: 100%;
+        }
+        
+        .job-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+        
+        .job-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .skill-tag {
+            background: #e0e7ff;
+            color: #4f46e5;
+            padding: 0.35rem 0.75rem;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .progress-bar-custom {
+            background: linear-gradient(90deg, #f093fb, #f5576c);
+            height: 8px;
+            border-radius: 10px;
+        }
+        
+        .btn-primary-custom {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary-custom:hover {
+            background: #e04a60;
+            border-color: #e04a60;
+        }
+        
+        .btn-outline-custom {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .btn-outline-custom:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .quick-actions-section {
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(240, 147, 251, 0.3);
+        }
+        
+        .btn-hero {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-hero:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: relative;
+                top: 0;
+                height: auto;
+            }
+            
+            .navbar-collapse {
+                background: white;
+                padding: 1rem;
+                border-radius: 0 0 8px 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+            
+            .profile-img {
+                width: 60px !important;
+                height: 60px !important;
+            }
+            
+            .job-card .d-flex {
+                flex-direction: column;
+            }
+            
+            .job-card .btn-group {
+                width: 100%;
+                margin-top: 1rem;
+            }
+            
+            .job-card .btn-group .btn {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand logo" href="index.html">FreelanceHub</a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="freelancer-dashboard.html">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#find-work">Find Work</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#my-proposals">My Proposals</a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-secondary me-2 d-none d-md-block">Notifications (5)</button>
+                    <div class="dropdown">
+                        <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown">
+                            <img src="https://ui-avatars.com/api/?name=Freelancer+Pro&background=764ba2&color=fff" alt="User" width="40" height="40" class="rounded-circle">
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">Profile</a></li>
+                            <li><a class="dropdown-item" href="#">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">Sign out</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Container -->
+    <div class="container-fluid mt-5 pt-3">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3 col-md-4 sidebar d-none d-md-block">
+                <div class="p-3">
+                    <div class="profile-card text-center">
+                        <img src="https://ui-avatars.com/api/?name=Alex+Smith&background=fff&color=f5576c&size=80" alt="Profile" class="profile-img rounded-circle mb-3" style="width: 80px; height: 80px; border: 3px solid rgba(255,255,255,0.3);">
+                        <h3 class="text-white mb-1">Alex Smith</h3>
+                        <p class="text-white-50 mb-2">Full Stack Developer</p>
+                        <div class="mb-2">
+                            <span class="text-white fs-5">⭐ 4.9</span>
+                            <span class="text-white-50 ms-1">(156 reviews)</span>
+                        </div>
+                        <div class="d-flex justify-content-around mt-3 pt-3 border-top border-white-50">
+                            <div class="text-center">
+                                <div class="text-white fw-bold fs-5">5</div>
+                                <div class="text-white-50 small">Active</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-white fw-bold fs-5">89</div>
+                                <div class="text-white-50 small">Completed</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <nav class="sidebar-nav">
+                        <a href="#overview" class="nav-link active d-block">📊 Overview</a>
+                        <a href="#find-work" class="nav-link d-block">🔍 Find Work</a>
+                        <a href="#my-proposals" class="nav-link d-block">📝 My Proposals (8)</a>
+                        <a href="#active-jobs" class="nav-link d-block">💼 Active Jobs (5)</a>
+                        <a href="#contracts" class="nav-link d-block">📄 Contracts</a>
+                        <a href="#earnings" class="nav-link d-block">💰 Earnings</a>
+                        <a href="#messages" class="nav-link d-block">💬 Messages</a>
+                        <a href="#portfolio" class="nav-link d-block">🎨 Portfolio</a>
+                        <a href="client-dashboard.html" class="nav-link d-block mt-3 pt-3 border-top border-white-50">🔄 Switch to Client</a>
+                        <a href="#settings" class="nav-link d-block">⚙️ Settings</a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9 col-md-8">
+                <div class="p-3">
+                    <!-- Stats Overview -->
+                    <div class="mb-4">
+                        <h1 class="h2 mb-1">Welcome back, {{ user.get_full_name|default:user.username }}! 🚀</h1>
+                        <p class="text-muted mb-4">You have {{ open_projects|length }} new job matches and {{ pending_proposals_count }} pending proposals.</p>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-xl-3 col-md-6">
+                                <div class="stats-card">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="fs-2">💼</span>
+                                        <span class="status-badge bg-success bg-opacity-10 text-success">Active</span>
+                                    </div>
+                                    <h3 class="fw-bold mb-1">{{ active_projects_count }}</h3>
+                                    <p class="text-muted small mb-0">Active Projects</p>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="stats-card">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="fs-2">📝</span>
+                                        <span class="status-badge bg-warning bg-opacity-10 text-warning">Pending</span>
+                                    </div>
+                                    <h3 class="fw-bold mb-1">{{ pending_proposals_count }}</h3>
+                                    <p class="text-muted small mb-0">Pending Proposals</p>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="stats-card">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="fs-2">💰</span>
+                                        <span class="status-badge bg-primary bg-opacity-10 text-primary">Total</span>
+                                    </div>
+                                    <h3 class="fw-bold mb-1">${{ total_earnings|floatformat:2 }}</h3>
+                                    <p class="text-muted small mb-0">Total Earnings</p>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="stats-card">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="fs-2">✅</span>
+                                        <span class="status-badge bg-info bg-opacity-10 text-info">Completed</span>
+                                    </div>
+                                    <h3 class="fw-bold mb-1">{{ completed_projects_count }}</h3>
+                                    <p class="text-muted small mb-0">Completed Jobs</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions-section p-4 mb-4">
+                        <h2 class="text-white mb-3">Quick Actions</h2>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <a href="{% url 'core:project_list' %}" class="btn-hero w-100 d-block text-center text-decoration-none" style="background: white; color: #f5576c;">🔍 Find New Work</a>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn-hero w-100 text-white" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);" onclick="alert('Submit Time feature - to be implemented')">⏰ Submit Time</button>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn-hero w-100 text-white" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);" onclick="alert('View Earnings feature - to be implemented')">💰 View Earnings</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Best Matches -->
+                    <div class="bg-white rounded-3 shadow-sm p-4 mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h2 class="h4 mb-0">Best Matches For You</h2>
+                            <a href="{% url 'core:project_list' %}" class="text-decoration-none fw-bold" style="color: #f5576c;">Browse All Jobs →</a>
+                        </div>
+
+                        <div class="row g-3">
+                            {% if open_projects %}
+                                {% for project in open_projects %}
+                                <div class="col-12">
+                                    <div class="job-card">
+                                        <div class="d-md-flex justify-content-between align-items-start mb-3">
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <h3 class="h5 mb-0 me-2">{{ project.title }}</h3>
+                                                    <span class="status-badge bg-warning bg-opacity-10 text-warning">New</span>
+                                                </div>
+                                                <p class="text-muted mb-3">{{ project.description|truncatewords:25 }}</p>
+                                                <div class="d-flex flex-wrap gap-3 text-muted small mb-3">
+                                                    <span>💰 ${{ project.budget|floatformat:2 }}</span>
+                                                    <span>📅 Posted: {{ project.created_at|date:"M d, Y" }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-md-flex align-items-center pt-3 border-top">
+                                            <div class="d-flex align-items-center me-auto mb-2 mb-md-0">
+                                                {% if project.client.clientprofile.profile_pic %}
+                                                    <img src="{{ project.client.clientprofile.profile_pic.url }}" alt="Client" class="rounded-circle me-2" width="40" height="40">
+                                                {% else %}
+                                                    <img src="https://ui-avatars.com/api/?name={{ project.client.get_full_name|default:project.client.username }}&background=667eea&color=fff&size=40" alt="Client" class="rounded-circle me-2" width="40" height="40">
+                                                {% endif %}
+                                                <div>
+                                                    <div class="fw-bold">{{ project.client.get_full_name|default:project.client.username }}</div>
+                                                    {% if project.client.clientprofile.company_name %}
+                                                        <div class="text-muted small">{{ project.client.clientprofile.company_name }}</div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <a href="{% url 'core:proposal_create' project.id %}" class="btn btn-primary-custom">Submit Proposal</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="col-12">
+                                    <p class="text-muted text-center py-4">No new projects available. <a href="{% url 'core:project_list' %}">Browse all projects</a></p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Active Jobs -->
+                    <div class="bg-white rounded-3 shadow-sm p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h2 class="h4 mb-0">My Active Jobs</h2>
+                            {% if active_projects_count > 0 %}
+                            <a href="{% url 'core:proposal_list' %}" class="text-decoration-none fw-bold" style="color: #f5576c;">View All →</a>
+                            {% endif %}
+                        </div>
+
+                        <div class="row g-3">
+                            {% if active_jobs %}
+                                {% for proposal in active_jobs %}
+                                <div class="col-12">
+                                    <div class="job-card">
+                                        <div class="d-md-flex justify-content-between align-items-start mb-3">
+                                            <div class="flex-grow-1">
+                                                <h3 class="h5 mb-2">{{ proposal.project.title }}</h3>
+                                                <p class="text-muted mb-3">{{ proposal.project.description|truncatewords:15 }}</p>
+                                                <div class="d-flex flex-wrap gap-3 text-muted small">
+                                                    <span>👤 {{ proposal.project.client.get_full_name|default:proposal.project.client.username }}</span>
+                                                    <span>📅 Started: {{ proposal.created_at|date:"M d, Y" }}</span>
+                                                    <span>💰 ${{ proposal.bid_amount|floatformat:2 }}</span>
+                                                </div>
+                                            </div>
+                                            <span class="status-badge bg-success bg-opacity-10 text-success mt-2 mt-md-0">{{ proposal.project.get_status_display }}</span>
+                                        </div>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <a href="{% url 'core:project_detail' proposal.project.id %}" class="btn btn-outline-custom flex-fill">View Details</a>
+                                            <a href="{% url 'core:proposal_list' %}" class="btn btn-outline-secondary">📝 My Proposals</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="col-12">
+                                    <p class="text-muted text-center py-4">No active jobs. <a href="{% url 'core:project_list' %}">Find work now!</a></p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation (for small screens) -->
+    <div class="d-block d-md-none fixed-bottom bg-white border-top p-2">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-3">
+                    <a href="index.html" class="text-decoration-none text-muted d-block">
+                        <div>🏠</div>
+                        <small>Home</small>
+                    </a>
+                </div>
+                <div class="col-3">
+                    <a href="freelancer-dashboard.html" class="text-decoration-none d-block" style="color: #f5576c;">
+                        <div>📊</div>
+                        <small>Dashboard</small>
+                    </a>
+                </div>
+                <div class="col-3">
+                    <a href="#find-work" class="text-decoration-none text-muted d-block">
+                        <div>🔍</div>
+                        <small>Find Work</small>
+                    </a>
+                </div>
+                <div class="col-3">
+                    <a href="#my-proposals" class="text-decoration-none text-muted d-block">
+                        <div>📝</div>
+                        <small>Proposals</small>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/script1.js' %}"></script>
+</body>
+</html>

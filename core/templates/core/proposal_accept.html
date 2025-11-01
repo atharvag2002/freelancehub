@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accept Proposal - FreelanceHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <h1 class="mb-4">Accept Proposal</h1>
+                
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5>Project: {{ proposal.project.title }}</h5>
+                        <p class="text-muted">Freelancer: {{ proposal.freelancer.get_full_name|default:proposal.freelancer.username }}</p>
+                        <p><strong>Bid Amount:</strong> ${{ proposal.bid_amount|floatformat:2 }}</p>
+                        <p><strong>Cover Letter:</strong></p>
+                        <p>{{ proposal.cover_letter|linebreaks }}</p>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <strong>Warning:</strong> Accepting this proposal will reject all other pending proposals for this project and change the project status to "In Progress".
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">Yes, Accept Proposal</button>
+                        <a href="{% url 'core:project_proposals' proposal.project.id %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
