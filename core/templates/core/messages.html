@@ -1,0 +1,483 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    :root {
+        {% if user.user_type == 'client' %}
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --primary-color: #667eea;
+        {% else %}
+        --primary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --primary-color: #f5576c;
+        {% endif %}
+    }
+    
+    .messages-container {
+        height: calc(100vh - 76px);
+        margin-top: 76px;
+        display: flex;
+        background-color: #f8f9fa;
+    }
+
+    .chat-list {
+        width: 350px;
+        background: white;
+        border-right: 1px solid #dee2e6;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chat-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: #f8f9fa;
+    }
+
+    .chat-list-header, .chat-header {
+        padding: 1rem;
+        background: white;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .chat-search {
+        padding: 1rem;
+        background: white;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .chat-items {
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .chat-item {
+        padding: 1rem;
+        border-bottom: 1px solid #f1f1f1;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .chat-item:hover {
+        background: #f8f9fa;
+    }
+
+    .chat-item.active {
+        background: #e9ecef;
+    }
+
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .message {
+        max-width: 70%;
+        padding: 0.75rem 1rem;
+        border-radius: 1rem;
+        position: relative;
+    }
+
+    .message.sent {
+        background: var(--primary-gradient);
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 0.25rem;
+    }
+
+    .message.received {
+        background: white;
+        border-bottom-left-radius: 0.25rem;
+        align-self: flex-start;
+    }
+
+    .message-time {
+        font-size: 0.75rem;
+        opacity: 0.8;
+        margin-top: 0.25rem;
+    }
+
+    .chat-input {
+        padding: 1rem;
+        background: white;
+        border-top: 1px solid #dee2e6;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .chat-input input {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 1.5rem;
+        outline: none;
+    }
+
+    .chat-input button {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 1.5rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .chat-input button:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+
+    .user-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+    }
+
+    .chat-preview {
+        flex: 1;
+        margin-left: 1rem;
+    }
+
+    .chat-name {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .chat-last-message {
+        color: #6c757d;
+        font-size: 0.875rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .chat-meta {
+        text-align: right;
+        font-size: 0.75rem;
+    }
+
+    .chat-time {
+        color: #6c757d;
+    }
+
+    .chat-badge {
+        background: var(--primary-color);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+    }
+
+    .no-chat-selected {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: #6c757d;
+        background: white;
+    }
+
+    @media (max-width: 768px) {
+        .chat-list {
+            width: 100%;
+            display: flex;
+        }
+
+        .chat-area {
+            display: none;
+        }
+
+        .chat-area.active {
+            display: flex;
+            position: fixed;
+            top: 76px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+        }
+
+        .back-to-chats {
+            display: block !important;
+        }
+    }
+
+    .back-to-chats {
+        display: none;
+        padding: 0.5rem;
+        background: none;
+        border: none;
+        color: var(--primary-color);
+        cursor: pointer;
+    }
+
+    .attachment-preview {
+        max-width: 200px;
+        max-height: 200px;
+        object-fit: contain;
+        margin-top: 0.5rem;
+        border-radius: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="messages-container">
+    <!-- Chat List -->
+    <div class="chat-list">
+        <div class="chat-list-header">
+            <h4 class="mb-0">Messages</h4>
+        </div>
+        <div class="chat-search">
+            <input type="text" class="form-control" placeholder="Search chats...">
+        </div>
+        <div class="chat-items">
+            {% for item in project_list %}
+            <div class="chat-item" data-project-id="{{ item.project.id }}">
+                <div class="d-flex align-items-start">
+                    {% if item.project.client == user %}
+                        <!-- Show freelancer's info -->
+                        {% with freelancer=item.accepted_proposal.freelancer %}
+                        <img src="https://ui-avatars.com/api/?name={{ freelancer.username }}&background=random" alt="User" class="user-avatar">
+                        <div class="chat-preview">
+                            <div class="chat-name">{{ freelancer.get_full_name|default:freelancer.username }}</div>
+                            <div class="chat-last-message">
+                                {% if item.last_message %}
+                                    {{ item.last_message.content|truncatewords:5|default:"📎 Attachment" }}
+                                {% else %}
+                                    {{ item.project.title }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endwith %}
+                    {% else %}
+                        <!-- Show client's info -->
+                        {% with client=item.project.client %}
+                        <img src="https://ui-avatars.com/api/?name={{ client.username }}&background=random" alt="User" class="user-avatar">
+                        <div class="chat-preview">
+                            <div class="chat-name">{{ client.get_full_name|default:client.username }}</div>
+                            <div class="chat-last-message">
+                                {% if item.last_message %}
+                                    {{ item.last_message.content|truncatewords:5|default:"📎 Attachment" }}
+                                {% else %}
+                                    {{ item.project.title }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endwith %}
+                    {% endif %}
+                    <div class="chat-meta">
+                        <div class="chat-time">
+                            {% if item.last_message %}
+                                {{ item.last_message.created_at|date:"g:i A" }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="p-4 text-center text-muted">
+                <p class="mb-2">💬 No active conversations</p>
+                <small>Accept a proposal to start messaging!</small>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Chat Area -->
+    <div class="chat-area" id="chatArea">
+        <div class="no-chat-selected">
+            <h3>Select a chat to start messaging</h3>
+            <p class="text-muted">Choose from your active projects on the left</p>
+        </div>
+    </div>
+
+    <!-- Chat Area Template (Hidden) -->
+    <template id="chatTemplate">
+        <div class="chat-header d-flex align-items-center">
+            <button class="back-to-chats me-2">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <img src="" alt="User" class="user-avatar me-3" id="chatUserAvatar">
+            <div>
+                <h5 class="mb-0" id="chatUserName"></h5>
+                <small class="text-muted" id="chatProjectTitle"></small>
+            </div>
+        </div>
+        <div class="chat-messages" id="messagesList">
+        </div>
+        <div class="chat-input">
+            <input type="file" id="attachmentInput" style="display: none;">
+            <button onclick="document.getElementById('attachmentInput').click()">
+                <i class="fas fa-paperclip"></i>
+            </button>
+            <input type="text" placeholder="Type a message..." id="messageInput">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </template>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentProjectId = null;
+let lastMessageId = null;
+const messagePollingInterval = 3000; // 3 seconds
+
+document.querySelectorAll('.chat-item').forEach(item => {
+    item.addEventListener('click', () => {
+        const projectId = item.dataset.projectId;
+        loadChat(projectId);
+        
+        // For mobile: Show chat area and hide chat list
+        document.querySelector('.chat-area').classList.add('active');
+        if (window.innerWidth <= 768) {
+            document.querySelector('.chat-list').style.display = 'none';
+        }
+    });
+});
+
+function loadChat(projectId) {
+    currentProjectId = projectId;
+    const chatArea = document.getElementById('chatArea');
+    
+    // Clear previous content
+    chatArea.innerHTML = '';
+    
+    // Clone and append chat template
+    const template = document.getElementById('chatTemplate');
+    chatArea.appendChild(template.content.cloneNode(true));
+    
+    // Load messages
+    fetchMessages(projectId);
+    
+    // Start polling for new messages
+    startMessagePolling();
+}
+
+function fetchMessages(projectId) {
+    fetch(`/api/messages/${projectId}/`)
+        .then(response => response.json())
+        .then(data => {
+            const messagesList = document.getElementById('messagesList');
+            messagesList.innerHTML = '';
+            
+            data.messages.forEach(message => {
+                appendMessage(message);
+            });
+            
+            // Update chat header
+            document.getElementById('chatUserName').textContent = data.other_user.name;
+            document.getElementById('chatProjectTitle').textContent = data.project.title;
+            document.getElementById('chatUserAvatar').src = data.other_user.avatar;
+            
+            // Scroll to bottom
+            messagesList.scrollTop = messagesList.scrollHeight;
+            
+            lastMessageId = data.messages.length > 0 ? data.messages[data.messages.length - 1].id : null;
+        });
+}
+
+function appendMessage(message) {
+    const messagesList = document.getElementById('messagesList');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${message.is_sent ? 'sent' : 'received'}`;
+    
+    let content = `<div class="message-content">${message.content}</div>`;
+    
+    if (message.attachment) {
+        if (message.attachment.endsWith('.jpg') || message.attachment.endsWith('.png') || message.attachment.endsWith('.gif')) {
+            content += `<img src="${message.attachment}" class="attachment-preview">`;
+        } else {
+            content += `<div class="attachment-link"><a href="${message.attachment}" target="_blank"><i class="fas fa-file"></i> Attachment</a></div>`;
+        }
+    }
+    
+    content += `<div class="message-time">${message.created_at}</div>`;
+    messageDiv.innerHTML = content;
+    messagesList.appendChild(messageDiv);
+}
+
+function sendMessage() {
+    const input = document.getElementById('messageInput');
+    const attachmentInput = document.getElementById('attachmentInput');
+    const content = input.value.trim();
+    
+    if (!content && !attachmentInput.files.length) return;
+    
+    const formData = new FormData();
+    formData.append('content', content);
+    if (attachmentInput.files.length) {
+        formData.append('attachment', attachmentInput.files[0]);
+    }
+    
+    fetch(`/api/messages/${currentProjectId}/send/`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => response.json())
+    .then(message => {
+        appendMessage(message);
+        input.value = '';
+        attachmentInput.value = '';
+        const messagesList = document.getElementById('messagesList');
+        messagesList.scrollTop = messagesList.scrollHeight;
+    });
+}
+
+function startMessagePolling() {
+    setInterval(() => {
+        if (currentProjectId && lastMessageId) {
+            fetch(`/api/messages/${currentProjectId}/new/?last_id=${lastMessageId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.messages.length > 0) {
+                        data.messages.forEach(message => {
+                            appendMessage(message);
+                        });
+                        lastMessageId = data.messages[data.messages.length - 1].id;
+                        const messagesList = document.getElementById('messagesList');
+                        messagesList.scrollTop = messagesList.scrollHeight;
+                    }
+                });
+        }
+    }, messagePollingInterval);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Mobile: Back button handler
+    document.querySelector('.back-to-chats')?.addEventListener('click', () => {
+        document.querySelector('.chat-area').classList.remove('active');
+        document.querySelector('.chat-list').style.display = 'flex';
+    });
+});
+
+// Utility function to get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}
