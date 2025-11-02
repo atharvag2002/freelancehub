@@ -338,6 +338,11 @@ document.querySelectorAll('.chat-item').forEach(item => {
         const projectId = item.dataset.projectId;
         loadChat(projectId);
         
+        // Remove active class from all chat items
+        document.querySelectorAll('.chat-item').forEach(i => i.classList.remove('active'));
+        // Add active class to clicked item
+        item.classList.add('active');
+        
         // For mobile: Show chat area and hide chat list
         document.querySelector('.chat-area').classList.add('active');
         if (window.innerWidth <= 768) {
@@ -356,6 +361,25 @@ function loadChat(projectId) {
     // Clone and append chat template
     const template = document.getElementById('chatTemplate');
     chatArea.appendChild(template.content.cloneNode(true));
+    
+    // Add back button handler
+    const backButton = document.querySelector('.back-to-chats');
+    if (backButton) {
+        backButton.addEventListener('click', () => {
+            document.querySelector('.chat-area').classList.remove('active');
+            document.querySelector('.chat-list').style.display = 'flex';
+        });
+    }
+    
+    // Add enter key handler for message input
+    const messageInput = document.getElementById('messageInput');
+    if (messageInput) {
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    }
     
     // Load messages
     fetchMessages(projectId);
@@ -455,14 +479,6 @@ function startMessagePolling() {
         }
     }, messagePollingInterval);
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Mobile: Back button handler
-    document.querySelector('.back-to-chats')?.addEventListener('click', () => {
-        document.querySelector('.chat-area').classList.remove('active');
-        document.querySelector('.chat-list').style.display = 'flex';
-    });
-});
 
 // Utility function to get CSRF token
 function getCookie(name) {

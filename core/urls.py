@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from . import views, api_views
 
 app_name = 'core'
 
@@ -13,4 +13,10 @@ urlpatterns = [
     path('proposals/create/<int:project_id>/', views.proposal_create, name='proposal_create'),
     path('proposals/my/', views.proposal_list, name='proposal_list'),
     path('proposals/<int:proposal_id>/accept/', views.proposal_accept, name='proposal_accept'),
+    path('messages/', views.all_messages, name='all_messages'),
+    
+    # API endpoints for messaging
+    path('api/messages/<int:project_id>/', api_views.get_messages, name='api_get_messages'),
+    path('api/messages/<int:project_id>/send/', api_views.send_message, name='api_send_message'),
+    path('api/messages/<int:project_id>/new/', api_views.get_new_messages, name='api_get_new_messages'),
 ]

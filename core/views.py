@@ -253,3 +253,46 @@ def project_messages(request, project_id):
     }
     
     return render(request, 'core/project_messages.html', context)
+
+
+@login_required
+def all_messages(request):
+    """View all conversations for a user (WhatsApp-like interface)"""
+    project_list = []
+    
+    if request.user.user_type == 'client':
+        # Get all projects where user is client and project is in progress
+        projects = Project.objects.filter(client=request.user, status='in_progress')
+        for project in projects:
+            accepted_proposal = project.proposals.filter(status='accepted').first()
+            if accepted_proposal:
+                last_message = project.messages.order_by('-created_at').first()
+                project_list.append({
+                    'project': project,
+                    'accepted_proposal': accepted_proposal,
+                    'last_message': last_message,
+                })
+    else:
+        # Get all projects where user is the accepted freelancer
+        accepted_proposals = Proposal.objects.filter(
+            freelancer=request.user, 
+            status='accepted',
+            project__status='in_progress'
+        ).select_related('project')
+        
+        for proposal in accepted_proposals:
+            last_message = proposal.project.messages.order_by('-created_at').first()
+            project_list.append({
+                'project': proposal.project,
+                'accepted_proposal': proposal,
+                'last_message': last_message,
+            })
+    
+    # Sort by last message time
+    project_list.sort(key=lambda x: x['last_message'].created_at if x['last_message'] else x['project'].created_at, reverse=True)
+    
+    context = {
+        'project_list': project_list,
+    }
+    
+    return render(request, 'core/messages.html', context)

@@ -16,8 +16,13 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/public/favicon.ico">
     
-   <!-- CSS -->
-<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    
+    {% block extra_css %}{% endblock %}
 
 </head>
 <body>
@@ -26,7 +31,7 @@
         <div class="container">
             <div class="nav-content">
                 <div class="logo">
-                    <a href="{% url 'core:home' %}" class="logo-link">
+                    <a href="{% url 'core:index' %}" class="logo-link">
                         <div class="logo-icon"></div>
                         <span class="logo-text">FreelanceHub</span>
                     </a>
@@ -176,5 +181,7 @@
 
     <!-- JS -->
 <script src="{% static 'js/scripts.js' %}"></script>
+
+{% block extra_js %}{% endblock %}
 </body>
 </html>
