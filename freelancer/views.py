@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.db.models import Avg
 from .forms import FreelancerRegistrationForm, FreelancerProfileForm
 from django.contrib.auth.forms import AuthenticationForm
 from users.models import User
-from core.models import Project, Proposal
+from core.models import Project, Proposal, Review
 
 def freelancer_register(request):
     if request.method == 'POST':
@@ -75,6 +76,15 @@ def freelancer_dashboard(request):
     # Calculate total earnings (from completed projects)
     total_earnings = sum(proposal.bid_amount for proposal in completed_jobs)
     
+    # Calculate average rating from reviews
+    avg_rating = Review.objects.filter(freelancer=request.user).aggregate(
+        avg_rating=Avg('rating')
+    )['avg_rating'] or 0
+    avg_rating = round(avg_rating, 1)
+    
+    # Get review count for display
+    review_count = Review.objects.filter(freelancer=request.user).count()
+    
     context = {
         'user': request.user,
         'profile': profile,
@@ -84,6 +94,8 @@ def freelancer_dashboard(request):
         'total_earnings': total_earnings,
         'open_projects': open_projects,
         'active_jobs': active_jobs_display,
+        'avg_rating': avg_rating,
+        'review_count': review_count,
     }
     return render(request, 'freelancer/freel-dashboard.html', context)
 

@@ -62,3 +62,20 @@ class Message(models.Model):
     
     def __str__(self):
         return f"{self.sender.username} on {self.project.title} - {self.created_at}"
+
+
+class Review(models.Model):
+    """Review system for rating freelancers by clients"""
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='reviews')
+    client = models.ForeignKey(User, on_delete=models.CASCADE, related_name='given_reviews')
+    freelancer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_reviews')
+    rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])  # 1-5 stars
+    feedback = models.TextField(blank=True, help_text="Optional feedback")
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        unique_together = ['project', 'client']  # One review per project per client
+    
+    def __str__(self):
+        return f"{self.rating}★ - {self.client.username} → {self.freelancer.username}"

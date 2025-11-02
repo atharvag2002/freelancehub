@@ -5,61 +5,361 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ project.title }} - FreelanceHub</title>
+    
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style1.css' %}">
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --client-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --primary-color: #f5576c;
+            --client-primary: #667eea;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+        
+        .project-header {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .project-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .btn-primary-custom {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+        }
+        
+        .btn-primary-custom:hover {
+            background: #e04a60;
+            border-color: #e04a60;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(245, 87, 108, 0.3);
+        }
+        
+        .btn-client-primary {
+            background: var(--client-primary);
+            border-color: var(--client-primary);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+        }
+        
+        .btn-client-primary:hover {
+            background: #5a6fd8;
+            border-color: #5a6fd8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-outline-custom {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        
+        .btn-outline-custom:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-outline-client {
+            border-color: var(--client-primary);
+            color: var(--client-primary);
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        
+        .btn-outline-client:hover {
+            background: var(--client-primary);
+            color: white;
+        }
+        
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .budget-display {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .client-budget-display {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border-left: 4px solid var(--client-primary);
+        }
+        
+        .budget-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .client-budget-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--client-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .alert-success-custom {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border: none;
+            border-radius: 12px;
+            border-left: 4px solid #059669;
+            color: #065f46;
+        }
+        
+        .alert-info-custom {
+            background: linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%);
+            border: none;
+            border-radius: 12px;
+            border-left: 4px solid #2563eb;
+            color: #1e40af;
+        }
+        
+        .alert-warning-custom {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: none;
+            border-radius: 12px;
+            border-left: 4px solid #d97706;
+            color: #92400e;
+        }
+        
+        .description-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+        
+        .project-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        
+        .client-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .client-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--client-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .project-header, .project-content {
+                padding: 1.5rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-buttons .btn {
+                width: 100%;
+            }
+            
+            .budget-display, .client-budget-display {
+                padding: 1rem;
+            }
+            
+            .budget-amount, .client-budget-amount {
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .project-header, .project-content {
+                padding: 1rem;
+            }
+            
+            .project-meta {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-8">
-                <h1>{{ project.title }}</h1>
-                <p class="text-muted">Posted by {{ project.client.get_full_name|default:project.client.username }} on {{ project.created_at|date:"M d, Y" }}</p>
-                <p class="badge bg-{{ project.status|yesno:'success,warning,secondary' }}">{{ project.get_status_display }}</p>
-                
-                <div class="mt-4">
-                    <h3>Description</h3>
-                    <p>{{ project.description|linebreaks }}</p>
+    <div class="container">
+        <!-- Project Header -->
+        <div class="project-header">
+            <div class="project-meta">
+                <h1 class="h2 mb-0">{{ project.title }}</h1>
+                <span class="status-badge bg-{{ project.status|yesno:'success,warning,secondary' }}">
+                    {{ project.get_status_display }}
+                </span>
+            </div>
+            
+            <div class="client-info">
+                <div class="client-avatar">
+                    {{ project.client.get_full_name|default:project.client.username|first|upper }}
                 </div>
-                
-                <div class="mt-4">
-                    <h5>Budget: ${{ project.budget|floatformat:2 }}</h5>
+                <div>
+                    <div class="fw-medium">Posted by {{ project.client.get_full_name|default:project.client.username }}</div>
+                    <div class="text-muted small">📅 {{ project.created_at|date:"M d, Y" }}</div>
                 </div>
-                
-                {% if user.user_type == 'client' and project.client == user %}
-                <div class="mt-4">
-                    <a href="{% url 'core:project_proposals' project.id %}" class="btn btn-primary">View Proposals ({{ project.proposals.count }})</a>
-                    {% if project.status == 'in_progress' %}
-                    <a href="{% url 'core:project_messages' project.id %}" class="btn btn-success">💬 Messages</a>
-                    {% endif %}
-                </div>
-                {% elif user.user_type == 'freelancer' %}
-                <div class="mt-4">
-                    {% if can_submit_proposal %}
-                    <a href="{% url 'core:proposal_create' project.id %}" class="btn btn-primary">Submit Proposal</a>
-                    {% elif user_proposal %}
-                        {% if project.status == 'in_progress' and user_proposal.status == 'accepted' %}
-                        <div class="alert alert-success">
-                            Your proposal was accepted! 
-                            <a href="{% url 'core:project_messages' project.id %}" class="btn btn-sm btn-success">💬 Go to Messages</a>
-                        </div>
-                        {% else %}
-                        <div class="alert alert-info">
-                            You have already submitted a proposal for this project.
-                            <a href="{% url 'core:proposal_list' %}">View your proposals</a>
-                        </div>
-                        {% endif %}
-                    {% else %}
-                    <div class="alert alert-warning">This project is no longer accepting proposals.</div>
-                    {% endif %}
-                </div>
-                {% endif %}
             </div>
         </div>
-        
-        <div class="mt-4">
-            <a href="{% url 'core:project_list' %}" class="btn btn-secondary">Back to Projects</a>
-            <a href="{% if user.user_type == 'client' %}{% url 'client:dashboard' %}{% else %}{% url 'freelancer:dashboard' %}{% endif %}" class="btn btn-secondary">Dashboard</a>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Project Content -->
+                <div class="project-content">
+                    <!-- Description Section -->
+                    <div class="description-section">
+                        <h3 class="h4 mb-3" style="color: var(--primary-color);">📋 Project Description</h3>
+                        <div class="project-description">
+                            {{ project.description|linebreaks }}
+                        </div>
+                    </div>
+
+                    <!-- Budget Display -->
+                    <div class="{% if user.user_type == 'client' %}client-budget-display{% else %}budget-display{% endif %}">
+                        <div class="text-muted mb-2">Project Budget</div>
+                        <div class="{% if user.user_type == 'client' %}client-budget-amount{% else %}budget-amount{% endif %}">
+                            ${{ project.budget|floatformat:2 }}
+                        </div>
+                        <div class="text-muted small">
+                            {% if user.user_type == 'freelancer' %}
+                            Submit your proposal within this budget range
+                            {% else %}
+                            Budget allocated for this project
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        {% if user.user_type == 'client' and project.client == user %}
+                            <a href="{% url 'core:project_proposals' project.id %}" class="btn btn-client-primary">
+                                📝 View Proposals ({{ project.proposals.count }})
+                            </a>
+                            {% if project.status == 'in_progress' %}
+                            <a href="{% url 'core:project_messages' project.id %}" class="btn btn-outline-client">
+                                💬 Project Messages
+                            </a>
+                            {% endif %}
+                            
+                        {% elif user.user_type == 'freelancer' %}
+                            {% if can_submit_proposal %}
+                            <a href="{% url 'core:proposal_create' project.id %}" class="btn btn-primary-custom">
+                                ✍️ Submit Proposal
+                            </a>
+                            {% elif user_proposal %}
+                                {% if project.status == 'in_progress' and user_proposal.status == 'accepted' %}
+                                <div class="alert alert-success-custom w-100 p-3">
+                                    <div class="d-flex align-items-center">
+                                        <span class="fs-4 me-3">🎉</span>
+                                        <div>
+                                            <h5 class="mb-1">Your proposal was accepted!</h5>
+                                            <p class="mb-2">Congratulations! You can now start working on this project.</p>
+                                            <a href="{% url 'core:project_messages' project.id %}" class="btn btn-success btn-sm">
+                                                💬 Go to Messages
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="alert alert-info-custom w-100 p-3">
+                                    <div class="d-flex align-items-center">
+                                        <span class="fs-4 me-3">📨</span>
+                                        <div>
+                                            <h5 class="mb-1">Proposal Submitted</h5>
+                                            <p class="mb-0">You have already submitted a proposal for this project.</p>
+                                            <a href="{% url 'core:proposal_list' %}" class="btn btn-outline-primary btn-sm mt-2">
+                                                View Your Proposals
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% else %}
+                            <div class="alert alert-warning-custom w-100 p-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="fs-4 me-3">⏰</span>
+                                    <div>
+                                        <h5 class="mb-1">Proposals Closed</h5>
+                                        <p class="mb-0">This project is no longer accepting proposals.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="mt-4 mb-5">
+            <a href="{% url 'core:project_list' %}" class="btn btn-outline-secondary me-2">
+                ← Back to Projects
+            </a>
+            <a href="{% if user.user_type == 'client' %}{% url 'client:dashboard' %}{% else %}{% url 'freelancer:dashboard' %}{% endif %}" class="btn btn-outline-secondary">
+                📊 Dashboard
+            </a>
         </div>
     </div>
-</body>
-</html>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

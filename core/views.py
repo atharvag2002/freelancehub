@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Q
-from .models import Project, Proposal, Message
+from django.db.models import Q, Avg
+from .models import Project, Proposal, Message, Review
 from .forms import ProjectForm, ProposalForm, MessageForm
+from users.models import User
+from freelancer.models import FreelancerProfile
 
 
 def index(request):
@@ -296,3 +298,52 @@ def all_messages(request):
     }
     
     return render(request, 'core/messages.html', context)
+
+
+@login_required
+def browse_freelancers(request):
+    """Browse all freelancers with their profiles and ratings"""
+    # Only clients can browse freelancers
+    if request.user.user_type != 'client':
+        messages.error(request, "Only clients can browse freelancers.")
+        return redirect('core:index')
+    
+    # Get all freelancers with profiles
+    freelancers = User.objects.filter(user_type='freelancer')
+    
+    # Search by name or skills
+    query = request.GET.get('q')
+    if query:
+        freelancers = freelancers.filter(
+            Q(username__icontains=query) | 
+            Q(first_name__icontains=query) | 
+            Q(last_name__icontains=query) |
+            Q(freelancerprofile__skills__icontains=query)
+        )
+    
+    # Get freelancer data with ratings
+    freelancer_list = []
+    for freelancer in freelancers:
+        try:
+            profile = freelancer.freelancerprofile
+            avg_rating = Review.objects.filter(freelancer=freelancer).aggregate(
+                avg_rating=Avg('rating')
+            )['avg_rating'] or 0
+            review_count = Review.objects.filter(freelancer=freelancer).count()
+            
+            freelancer_list.append({
+                'freelancer': freelancer,
+                'profile': profile,
+                'avg_rating': round(avg_rating, 1),
+                'review_count': review_count,
+            })
+        except FreelancerProfile.DoesNotExist:
+            # Skip freelancers without profiles
+            pass
+    
+    context = {
+        'freelancer_list': freelancer_list,
+        'query': request.GET.get('q', ''),
+    }
+    
+    return render(request, 'core/browse_freelancers.html', context)

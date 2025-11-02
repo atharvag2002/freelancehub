@@ -14,6 +14,7 @@ urlpatterns = [
     path('proposals/my/', views.proposal_list, name='proposal_list'),
     path('proposals/<int:proposal_id>/accept/', views.proposal_accept, name='proposal_accept'),
     path('messages/', views.all_messages, name='all_messages'),
+    path('freelancers/', views.browse_freelancers, name='browse_freelancers'),
     
     # API endpoints for messaging
     path('api/messages/<int:project_id>/', api_views.get_messages, name='api_get_messages'),

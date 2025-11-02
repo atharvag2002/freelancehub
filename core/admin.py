@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Project, Proposal, Message
+from .models import Project, Proposal, Message, Review
 
 
 @admin.register(Project)
@@ -28,3 +28,11 @@ class MessageAdmin(admin.ModelAdmin):
     def has_attachment(self, obj):
         return bool(obj.attachment)
     has_attachment.boolean = True
+
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ['client', 'freelancer', 'rating', 'created_at']
+    list_filter = ['rating', 'created_at']
+    search_fields = ['client__username', 'freelancer__username', 'project__title', 'feedback']
+    readonly_fields = ['created_at']
