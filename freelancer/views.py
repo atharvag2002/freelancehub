@@ -76,14 +76,9 @@ def freelancer_dashboard(request):
     # Calculate total earnings (from completed projects)
     total_earnings = sum(proposal.bid_amount for proposal in completed_jobs)
     
-    # Calculate average rating from reviews
-    avg_rating = Review.objects.filter(freelancer=request.user).aggregate(
-        avg_rating=Avg('rating')
-    )['avg_rating'] or 0
-    avg_rating = round(avg_rating, 1)
-    
-    # Get review count for display
-    review_count = Review.objects.filter(freelancer=request.user).count()
+    # Get rating and review count from profile
+    avg_rating = profile.avg_rating if profile else 0
+    review_count = profile.review_count if profile else 0
     
     context = {
         'user': request.user,

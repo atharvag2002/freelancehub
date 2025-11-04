@@ -79,3 +79,21 @@ class Review(models.Model):
     
     def __str__(self):
         return f"{self.rating}★ - {self.client.username} → {self.freelancer.username}"
+    
+    def save(self, *args, **kwargs):
+        # Save the review first
+        super().save(*args, **kwargs)
+        
+        # Update freelancer's rating and review count
+        from freelancer.models import FreelancerProfile
+        profile = FreelancerProfile.objects.get(user=self.freelancer)
+        
+        # Recalculate average rating
+        avg_rating = Review.objects.filter(freelancer=self.freelancer).aggregate(
+            avg=models.Avg('rating'))['avg'] or 0
+        review_count = Review.objects.filter(freelancer=self.freelancer).count()
+        
+        # Update profile
+        profile.avg_rating = avg_rating
+        profile.review_count = review_count
+        profile.save()
