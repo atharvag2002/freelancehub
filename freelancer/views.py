@@ -71,7 +71,7 @@ def freelancer_dashboard(request):
     ).order_by('-created_at')[:3]
     
     # Active jobs for display
-    active_jobs_display = active_jobs.select_related('project').order_by('-created_at')[:3]
+    active_jobs_display = active_jobs.select_related('project', 'project__client').order_by('-created_at')[:3]
     
     # Calculate total earnings (from completed projects)
     total_earnings = sum(proposal.bid_amount for proposal in completed_jobs)
@@ -92,7 +92,7 @@ def freelancer_dashboard(request):
         'avg_rating': avg_rating,
         'review_count': review_count,
     }
-    return render(request, 'freelancer/freel-dashboard.html', context)
+    return render(request, 'freelancer/freel-dashboard-new.html', context)
 
 def freelancer_logout(request):
     logout(request)

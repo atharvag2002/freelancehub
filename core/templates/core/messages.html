@@ -1,7 +1,11 @@
-{% extends 'core/base.html' %}
+{% extends 'base_freelancer.html' %}
 {% load static %}
 
+{% block title %}Messages - FreelanceHub{% endblock %}
+
 {% block extra_css %}
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
 <style>
     :root {
         {% if user.user_type == 'client' %}
@@ -15,17 +19,21 @@
     
     .messages-container {
         height: calc(100vh - 76px);
-        margin-top: 76px;
         display: flex;
         background-color: #f8f9fa;
+        position: relative;
     }
 
     .chat-list {
         width: 350px;
         background: white;
-        border-right: 1px solid #dee2e6;
+        border-left: 1px solid #dee2e6;
         display: flex;
         flex-direction: column;
+        position: fixed;
+        right: 0;
+        top: 76px;
+        bottom: 0;
     }
 
     .chat-area {
@@ -33,6 +41,7 @@
         display: flex;
         flex-direction: column;
         background: #f8f9fa;
+        margin-right: 350px;
     }
 
     .chat-list-header, .chat-header {
@@ -189,10 +198,14 @@
     @media (max-width: 768px) {
         .chat-list {
             width: 100%;
-            display: flex;
+            position: fixed;
+            left: 0;
+            right: 0;
+            border-left: none;
         }
 
         .chat-area {
+            margin-right: 0;
             display: none;
         }
 
@@ -204,14 +217,8 @@
             right: 0;
             bottom: 0;
             z-index: 1000;
-        }
-
-        .back-to-chats {
-            display: block !important;
-        }
-    }
-
-    .back-to-chats {
+            margin-right: 0;
+        }    .back-to-chats {
         display: none;
         padding: 0.5rem;
         background: none;
@@ -228,9 +235,11 @@
         border-radius: 0.5rem;
     }
 </style>
+
 {% endblock %}
 
 {% block content %}
+
 <div class="messages-container">
     <!-- Chat List -->
     <div class="chat-list">
@@ -331,6 +340,7 @@
 <script>
 let currentProjectId = null;
 let lastMessageId = null;
+let displayedMessageIds = new Set(); // Track displayed messages
 const messagePollingInterval = 3000; // 3 seconds
 
 document.querySelectorAll('.chat-item').forEach(item => {
@@ -394,9 +404,11 @@ function fetchMessages(projectId) {
         .then(data => {
             const messagesList = document.getElementById('messagesList');
             messagesList.innerHTML = '';
+            displayedMessageIds.clear(); // Clear tracked messages when loading new chat
             
             data.messages.forEach(message => {
                 appendMessage(message);
+                displayedMessageIds.add(message.id); // Track this message
             });
             
             // Update chat header
@@ -453,7 +465,11 @@ function sendMessage() {
     })
     .then(response => response.json())
     .then(message => {
-        appendMessage(message);
+        // Only append if we haven't displayed this message yet
+        if (!displayedMessageIds.has(message.id)) {
+            appendMessage(message);
+            displayedMessageIds.add(message.id);
+        }
         input.value = '';
         attachmentInput.value = '';
         const messagesList = document.getElementById('messagesList');
@@ -469,7 +485,11 @@ function startMessagePolling() {
                 .then(data => {
                     if (data.messages.length > 0) {
                         data.messages.forEach(message => {
-                            appendMessage(message);
+                            // Only append if we haven't displayed this message yet
+                            if (!displayedMessageIds.has(message.id)) {
+                                appendMessage(message);
+                                displayedMessageIds.add(message.id);
+                            }
                         });
                         lastMessageId = data.messages[data.messages.length - 1].id;
                         const messagesList = document.getElementById('messagesList');

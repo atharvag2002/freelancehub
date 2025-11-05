@@ -210,7 +210,7 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
+                <!-- <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'core:index' %}">Home</a>
                     </li>
@@ -223,7 +223,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'core:proposal_list' %}">My Proposals</a>
                     </li>
-                </ul>
+                </ul> -->
 
                 <div class="d-flex align-items-center">
                     <button class="btn btn-outline-secondary me-2 d-none d-md-block">Notifications</button>
@@ -292,8 +292,7 @@
                     <nav class="sidebar-nav">
                         <a href="#overview" class="nav-link active d-block">📊 Overview</a>
                         <a href="{% url 'core:project_list' %}" class="nav-link d-block">🔍 Find Work</a>
-                        <a href="{% url 'core:proposal_list' %}" class="nav-link d-block">📝 My Proposals ({{
-                            pending_proposals_count }})</a>
+                        <a href="{% url 'core:proposal_list' %}" class="nav-link d-block">📝 My Proposals ({{pending_proposals_count }})</a>
                         <a href="#active-jobs" class="nav-link d-block">💼 Active Jobs ({{ active_projects_count }})</a>
                         <a href="#earnings" class="nav-link d-block">💰 Earnings</a>
                         <a href="{% url 'core:all_messages' %}" class="nav-link d-block">💬 Messages</a>
@@ -309,8 +308,7 @@
                     <!-- Stats Overview -->
                     <div class="mb-4">
                         <h1 class="h2 mb-1">Welcome back, {{ user.get_full_name|default:user.username }}! 🚀</h1>
-                        <p class="text-muted mb-4">You have {{ open_projects|length }} new job matches and {{
-                            pending_proposals_count }} pending proposals.</p>
+                        <p class="text-muted mb-4">You have {{ open_projects|length }} new job matches and {{pending_proposals_count }} pending proposals.</p>
 
                         <div class="row g-3 mb-4">
                             <div class="col-xl-3 col-md-6">
@@ -376,14 +374,10 @@
                                 <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
                                     <div class="card-body d-flex flex-column justify-content-between">
                                         <div>
-                                            <h5 class="card-title mb-2 text-dark fw-semibold">{{ proposal.project.title
-                                                }}</h5>
-                                            <p class="card-text text-muted small mb-3">{{
-                                                proposal.project.description|truncatewords:15 }}</p>
+                                            <h5 class="card-title mb-2 text-dark fw-semibold">{{ proposal.project.title}}</h5>
+                                            <p class="card-text text-muted small mb-3">{{ proposal.project.description|truncatewords:15 }}</p>
                                             <ul class="list-unstyled small text-muted mb-3">
-                                                <li>👤 {{
-                                                    proposal.project.client.get_full_name|default:proposal.project.client.username
-                                                    }}</li>
+                                                <li>👤 {{ proposal.project.client.get_full_name|default:proposal.project.client.username }}</li>
                                                 <li>📅 Started: {{ proposal.created_at|date:"M d, Y" }}</li>
                                                 <li>💰 ${{ proposal.bid_amount|floatformat:2 }}</li>
                                             </ul>
@@ -448,12 +442,10 @@
                                                 alt="Client" class="rounded-circle me-2" width="40" height="40">
                                             {% endif %}
                                             <div>
-                                                <div class="fw-bold">{{
-                                                    project.client.get_full_name|default:project.client.username }}
+                                                <div class="fw-bold">{{ project.client.get_full_name|default:project.client.username }}
                                                 </div>
                                                 {% if project.client.clientprofile.company_name %}
-                                                <div class="text-muted small">{{
-                                                    project.client.clientprofile.company_name }}</div>
+                                                <div class="text-muted small">{{project.client.clientprofile.company_name }}</div>
                                                 {% endif %}
                                             </div>
                                         </div>

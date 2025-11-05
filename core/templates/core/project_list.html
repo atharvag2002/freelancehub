@@ -1,18 +1,10 @@
+{% extends 'base_freelancer.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects - FreelanceHub</title>
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{% static 'css/style1.css' %}">
-    
-    <style>
+
+{% block title %}Projects - FreelanceHub{% endblock %}
+
+{% block extra_css %}
+<style>
         :root {
             --primary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             --client-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -237,26 +229,27 @@
             }
         }
     </style>
-</head>
-<body>
-    <div class="container">
-        <!-- Page Header -->
-        <div class="page-header">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <h1 class="h2 mb-0">
-                    {% if user.user_type == 'client' %}
-                    <span style="color: var(--client-primary);">📁 My Projects</span>
-                    {% else %}
-                    <span style="color: var(--primary-color);">🔍 Available Projects</span>
-                    {% endif %}
-                </h1>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <h1 class="h2 mb-0">
                 {% if user.user_type == 'client' %}
-                <a href="{% url 'core:project_create' %}" class="btn btn-client-primary">
-                    <span>+</span> Create New Project
-                </a>
+                <span style="color: var(--client-primary);">📁 My Projects</span>
+                {% else %}
+                <span style="color: var(--primary-color);">🔍 Available Projects</span>
                 {% endif %}
-            </div>
+            </h1>
+            {% if user.user_type == 'client' %}
+            <a href="{% url 'core:project_create' %}" class="btn btn-client-primary">
+                <span>+</span> Create New Project
+            </a>
+            {% endif %}
         </div>
+    </div>
         
         <!-- Search & Filter Form (Freelancers Only) -->
         {% if user.user_type == 'freelancer' %}
@@ -369,8 +362,5 @@
             </a>
         </div>
     </div>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</div>
+{% endblock %}

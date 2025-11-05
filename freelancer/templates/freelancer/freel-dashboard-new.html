@@ -1,0 +1,199 @@
+{% extends 'base_freelancer.html' %}
+
+{% block title %}Freelancer Dashboard - FreelanceHub{% endblock %}
+
+{% block content %}
+<!-- Stats Overview -->
+<div class="mb-4">
+    <h1 class="h2 mb-1">Welcome back, {{ user.get_full_name|default:user.username }}! 🚀</h1>
+    <p class="text-muted mb-4">You have {{ open_projects|length }} new job matches and {{ pending_proposals_count }} pending proposals.</p>
+
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="fs-2">💼</span>
+                    <span class="status-badge bg-success bg-opacity-10 text-success">Active</span>
+                </div>
+                <h3 class="fw-bold mb-1">{{ active_projects_count }}</h3>
+                <p class="text-muted small mb-0">Active Projects</p>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="fs-2">📝</span>
+                    <span class="status-badge bg-warning bg-opacity-10 text-warning">Pending</span>
+                </div>
+                <h3 class="fw-bold mb-1">{{ pending_proposals_count }}</h3>
+                <p class="text-muted small mb-0">Pending Proposals</p>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="fs-2">💰</span>
+                    <span class="status-badge bg-primary bg-opacity-10 text-primary">Total</span>
+                </div>
+                <h3 class="fw-bold mb-1">${{ total_earnings|floatformat:2 }}</h3>
+                <p class="text-muted small mb-0">Total Earnings</p>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="fs-2">✅</span>
+                    <span class="status-badge bg-info bg-opacity-10 text-info">Completed</span>
+                </div>
+                <h3 class="fw-bold mb-1">{{ completed_projects_count }}</h3>
+                <p class="text-muted small mb-0">Completed Jobs</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Active Jobs -->
+<div class="bg-white rounded-3 shadow-sm p-4 border border=3 border-bottom mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4 mb-0">My Active Jobs</h2>
+        {% if active_projects_count > 0 %}
+        <a href="{% url 'core:proposal_list' %}" class="text-decoration-none fw-bold" style="color: #f5576c;">View All →</a>
+        {% endif %}
+    </div>
+
+    {% if active_jobs %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-2 g-3">
+        {% for proposal in active_jobs %}
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <div>
+                        <h5 class="card-title mb-2 text-dark fw-semibold">{{ proposal.project.title }}</h5>
+                        <p class="card-text text-muted small mb-3">{{ proposal.project.description|truncatewords:15 }}</p>
+                        <ul class="list-unstyled small text-muted mb-3">
+                            <li>👤 {{ proposal.project.client.get_full_name|default:proposal.project.client.username }}</li>
+                            <li>📅 Started: {{ proposal.created_at|date:"M d, Y" }}</li>
+                            <li>💰 ${{ proposal.bid_amount|floatformat:2 }}</li>
+                        </ul>
+                    </div>
+                    <div class="mt-auto">
+                        <span class="badge bg-success bg-opacity-10 text-success mb-2">
+                            {{ proposal.project.get_status_display }}
+                        </span>
+                        <a href="{% url 'core:project_detail' proposal.project.id %}" class="btn btn-outline-custom w-100 mt-1">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-4 text-muted">
+        <p>No active jobs. <a href="{% url 'core:project_list' %}" style="color: #f5576c;">Find work now!</a></p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Best Matches -->
+<div class="bg-white rounded-3 shadow-sm p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4 mb-0">Best Matches For You</h2>
+        <a href="{% url 'core:project_list' %}" class="text-decoration-none fw-bold" style="color: #f5576c;">Browse All Jobs →</a>
+    </div>
+
+    <div class="row g-3">
+        {% if open_projects %}
+        {% for project in open_projects %}
+        <div class="col-12">
+            <div class="job-card">
+                <div class="d-md-flex justify-content-between align-items-start mb-3">
+                    <div class="flex-grow-1">
+                        <div class="d-flex align-items-center mb-2">
+                            <h3 class="h5 mb-0 me-2">{{ project.title }}</h3>
+                            <span class="status-badge bg-warning bg-opacity-10 text-warning">New</span>
+                        </div>
+                        <p class="text-muted mb-3">{{ project.description|truncatewords:25 }}</p>
+                        <div class="d-flex flex-wrap gap-3 text-muted small mb-3">
+                            <span>💰 ${{ project.budget|floatformat:2 }}</span>
+                            <span>📅 Posted: {{ project.created_at|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-md-flex align-items-center pt-3 border-top">
+                    <div class="d-flex align-items-center me-auto mb-2 mb-md-0">
+                        {% if project.client.clientprofile.profile_pic %}
+                        <img src="{{ project.client.clientprofile.profile_pic.url }}" alt="Client" class="rounded-circle me-2" width="40" height="40">
+                        {% else %}
+                        <img src="https://ui-avatars.com/api/?name={{ project.client.get_full_name|default:project.client.username }}&background=667eea&color=fff&size=40"
+                            alt="Client" class="rounded-circle me-2" width="40" height="40">
+                        {% endif %}
+                        <div>
+                            <div class="fw-bold">{{ project.client.get_full_name|default:project.client.username }}</div>
+                            {% if project.client.clientprofile.company_name %}
+                            <div class="text-muted small">{{ project.client.clientprofile.company_name }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <a href="{% url 'core:proposal_create' project.id %}" class="btn btn-primary-custom">Submit Proposal</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="col-12">
+            <p class="text-muted text-center py-4">No new projects available. <a href="{% url 'core:project_list' %}">Browse all projects</a></p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+.stats-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    height: 100%;
+}
+
+.job-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: all 0.3s;
+}
+
+.job-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.btn-primary-custom {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary-custom:hover {
+    background: #e04a60;
+    border-color: #e04a60;
+}
+
+.btn-outline-custom {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-outline-custom:hover {
+    background: var(--primary-color);
+    color: white;
+}
+{% endblock %}
