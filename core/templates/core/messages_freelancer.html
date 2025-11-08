@@ -9,13 +9,8 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
 <style>
     :root {
-        {% if user.user_type == 'client' %}
-        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --primary-color: #667eea;
-        {% else %}
         --primary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         --primary-color: #f5576c;
-        {% endif %}
     }
     
     .messages-container {
@@ -196,6 +191,15 @@
         background: white;
     }
 
+    .back-to-chats {
+        display: none;
+        padding: 0.5rem;
+        background: none;
+        border: none;
+        color: var(--primary-color);
+        cursor: pointer;
+    }
+
     @media (max-width: 768px) {
         .chat-list {
             width: 100%;
@@ -219,13 +223,11 @@
             bottom: 0;
             z-index: 1000;
             margin-right: 0;
-        }    .back-to-chats {
-        display: none;
-        padding: 0.5rem;
-        background: none;
-        border: none;
-        color: var(--primary-color);
-        cursor: pointer;
+        }
+
+        .back-to-chats {
+            display: block;
+        }
     }
 
     .attachment-preview {
@@ -254,37 +256,20 @@
             {% for item in project_list %}
             <div class="chat-item" data-project-id="{{ item.project.id }}">
                 <div class="d-flex align-items-start">
-                    {% if item.project.client == user %}
-                        <!-- Show freelancer's info -->
-                        {% with freelancer=item.accepted_proposal.freelancer %}
-                        <img src="https://ui-avatars.com/api/?name={{ freelancer.username }}&background=random" alt="User" class="user-avatar">
-                        <div class="chat-preview">
-                            <div class="chat-name">{{ freelancer.get_full_name|default:freelancer.username }}</div>
-                            <div class="chat-last-message">
-                                {% if item.last_message %}
-                                    {{ item.last_message.content|truncatewords:5|default:"📎 Attachment" }}
-                                {% else %}
-                                    {{ item.project.title }}
-                                {% endif %}
-                            </div>
+                    <!-- Show client's info (freelancer sees client) -->
+                    {% with client=item.project.client %}
+                    <img src="https://ui-avatars.com/api/?name={{ client.username }}&background=random" alt="User" class="user-avatar">
+                    <div class="chat-preview">
+                        <div class="chat-name">{{ client.get_full_name|default:client.username }}</div>
+                        <div class="chat-last-message">
+                            {% if item.last_message %}
+                                {{ item.last_message.content|truncatewords:5|default:"📎 Attachment" }}
+                            {% else %}
+                                {{ item.project.title }}
+                            {% endif %}
                         </div>
-                        {% endwith %}
-                    {% else %}
-                        <!-- Show client's info -->
-                        {% with client=item.project.client %}
-                        <img src="https://ui-avatars.com/api/?name={{ client.username }}&background=random" alt="User" class="user-avatar">
-                        <div class="chat-preview">
-                            <div class="chat-name">{{ client.get_full_name|default:client.username }}</div>
-                            <div class="chat-last-message">
-                                {% if item.last_message %}
-                                    {{ item.last_message.content|truncatewords:5|default:"📎 Attachment" }}
-                                {% else %}
-                                    {{ item.project.title }}
-                                {% endif %}
-                            </div>
-                        </div>
-                        {% endwith %}
-                    {% endif %}
+                    </div>
+                    {% endwith %}
                     <div class="chat-meta">
                         <div class="chat-time">
                             {% if item.last_message %}
@@ -518,3 +503,4 @@ function getCookie(name) {
 }
 </script>
 {% endblock %}
+

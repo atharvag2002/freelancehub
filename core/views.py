@@ -263,6 +263,13 @@ def all_messages(request):
     project_list = []
     
     if request.user.user_type == 'client':
+        template_name = 'core/messages_client.html'
+        # Get client's profile
+        try:
+            profile = request.user.clientprofile
+        except:
+            profile = None
+        
         # Get all projects where user is client and project is in progress
         projects = Project.objects.filter(client=request.user, status='in_progress')
         for project in projects:
@@ -274,7 +281,30 @@ def all_messages(request):
                     'accepted_proposal': accepted_proposal,
                     'last_message': last_message,
                 })
+        
+        # Get stats for sidebar
+        active_projects = Project.objects.filter(client=request.user, status='in_progress')
+        completed_projects = Project.objects.filter(client=request.user, status='completed')
+        pending_proposals = Proposal.objects.filter(project__client=request.user, status='pending')
+        
+        # Sort by last message time
+        project_list.sort(key=lambda x: x['last_message'].created_at if x['last_message'] else x['project'].created_at, reverse=True)
+        
+        context = {
+            'project_list': project_list,
+            'profile': profile,
+            'active_projects_count': active_projects.count(),
+            'completed_projects_count': completed_projects.count(),
+            'pending_proposals_count': pending_proposals.count(),
+        }
     else:
+        template_name = 'core/messages_freelancer.html'
+        # Get freelancer's profile
+        try:
+            profile = request.user.freelancerprofile
+        except:
+            profile = None
+        
         # Get all projects where user is the accepted freelancer
         accepted_proposals = Proposal.objects.filter(
             freelancer=request.user, 
@@ -289,15 +319,30 @@ def all_messages(request):
                 'accepted_proposal': proposal,
                 'last_message': last_message,
             })
+        
+        # Sort by last message time
+        project_list.sort(key=lambda x: x['last_message'].created_at if x['last_message'] else x['project'].created_at, reverse=True)
+        
+        # Get stats for sidebar
+        active_jobs = Proposal.objects.filter(freelancer=request.user, status='accepted')
+        pending_proposals = Proposal.objects.filter(freelancer=request.user, status='pending')
+        completed_jobs = Proposal.objects.filter(freelancer=request.user, project__status='completed', status='accepted')
+        
+        # Get rating and review count from profile
+        avg_rating = profile.avg_rating if profile else 0
+        review_count = profile.review_count if profile else 0
+        
+        context = {
+            'project_list': project_list,
+            'profile': profile,
+            'active_projects_count': active_jobs.count(),
+            'pending_proposals_count': pending_proposals.count(),
+            'completed_projects_count': completed_jobs.count(),
+            'avg_rating': avg_rating,
+            'review_count': review_count,
+        }
     
-    # Sort by last message time
-    project_list.sort(key=lambda x: x['last_message'].created_at if x['last_message'] else x['project'].created_at, reverse=True)
-    
-    context = {
-        'project_list': project_list,
-    }
-    
-    return render(request, 'core/messages.html', context)
+    return render(request, template_name, context)
 
 
 @login_required
