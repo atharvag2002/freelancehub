@@ -1,0 +1,287 @@
+{% extends 'base_freelancer.html' %}
+{% load static %}
+
+{% block title %}Find Work - FreelanceHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --primary-color: #f5576c;
+    }
+    
+    .page-header {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .btn-primary-custom {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary-custom:hover {
+        background: #e04a60;
+        border-color: #e04a60;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(245, 87, 108, 0.3);
+        color: white;
+    }
+    
+    .filter-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border: none;
+        margin-bottom: 2rem;
+    }
+    
+    .filter-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    .project-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border: none;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .project-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .project-card .card-body {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    
+    .project-title {
+        color: #1a1a1a;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+    }
+    
+    .project-description {
+        color: #666;
+        flex-grow: 1;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+    
+    .project-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .budget {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+    
+    .status-badge {
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        background-color: #28a745;
+        color: white;
+    }
+    
+    .project-footer {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn-outline-custom {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        border-radius: 6px;
+        font-weight: 500;
+        flex: 1;
+        min-width: 120px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-custom:hover {
+        background: var(--primary-color);
+        color: white;
+    }
+    
+    .empty-state {
+        background: white;
+        border-radius: 12px;
+        padding: 3rem 2rem;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.7;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 8px;
+        padding: 0.75rem;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(245, 87, 108, 0.1);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .page-header {
+            padding: 1.5rem;
+        }
+        
+        .project-meta {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .project-footer {
+            flex-direction: column;
+        }
+        
+        .project-footer .btn {
+            width: 100%;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .page-header {
+            padding: 1rem;
+        }
+        
+        .project-card .card-body {
+            padding: 1rem;
+        }
+        
+        .filter-card .card-body {
+            padding: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <h1 class="h2 mb-0">
+        <span style="color: var(--primary-color);">🔍 Find Work</span>
+    </h1>
+    <p class="text-muted mb-0 mt-2">Browse available projects and submit proposals</p>
+</div>
+
+<!-- Search & Filter Form -->
+<div class="filter-card">
+    <div class="card-body">
+        <h5 class="card-title mb-4" style="color: var(--primary-color);">🔍 Search & Filter Projects</h5>
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="search" class="form-label fw-medium">Search</label>
+                <input type="text" class="form-control" id="search" name="q" placeholder="Search title or description..." value="{{ query }}">
+            </div>
+            <div class="col-md-3">
+                <label for="min_budget" class="form-label fw-medium">Min Budget</label>
+                <input type="number" class="form-control" id="min_budget" name="min_budget" placeholder="$0" step="0.01" value="{{ min_budget }}">
+            </div>
+            <div class="col-md-3">
+                <label for="max_budget" class="form-label fw-medium">Max Budget</label>
+                <input type="number" class="form-control" id="max_budget" name="max_budget" placeholder="$10000" step="0.01" value="{{ max_budget }}">
+            </div>
+            <div class="col-md-2">
+                <label for="sort" class="form-label fw-medium">Sort By</label>
+                <select class="form-select" id="sort" name="sort">
+                    <option value="-created_at" {% if sort_by == '-created_at' %}selected{% endif %}>Newest First</option>
+                    <option value="created_at" {% if sort_by == 'created_at' %}selected{% endif %}>Oldest First</option>
+                    <option value="-budget" {% if sort_by == '-budget' %}selected{% endif %}>Budget High-Low</option>
+                    <option value="budget" {% if sort_by == 'budget' %}selected{% endif %}>Budget Low-High</option>
+                </select>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary-custom">Apply Filters</button>
+                <a href="{% url 'core:freelancer_find_work' %}" class="btn btn-outline-custom">Clear Filters</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Projects Grid -->
+{% if projects %}
+<div class="row">
+    {% for project in projects %}
+    <div class="col-xl-4 col-lg-6 mb-4">
+        <div class="project-card">
+            <div class="card-body">
+                <h5 class="project-title">{{ project.title }}</h5>
+                <p class="project-description">{{ project.description|truncatewords:30 }}</p>
+                
+                <div class="project-meta">
+                    <div class="budget">
+                        ${{ project.budget|floatformat:2 }}
+                    </div>
+                    <span class="status-badge">
+                        {{ project.get_status_display }}
+                    </span>
+                </div>
+                
+                <div class="text-muted small mb-3">
+                    <i class="far fa-calendar me-1"></i> Posted: {{ project.created_at|date:"M d, Y" }}
+                </div>
+                
+                <div class="project-footer">
+                    <a href="{% url 'core:project_detail' project.id %}" class="btn btn-primary-custom">
+                        View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<!-- Empty State -->
+<div class="empty-state">
+    <div class="empty-state-icon">
+        🔍
+    </div>
+    <h3 class="mb-3">No open projects available</h3>
+    <p class="text-muted mb-4">
+        Check back later for new project opportunities that match your skills.
+    </p>
+</div>
+{% endif %}
+
+<!-- Back to Dashboard -->
+<div class="mt-4 mb-5">
+    <a href="{% url 'freelancer:dashboard' %}" class="btn btn-outline-secondary">
+        ← Back to Dashboard
+    </a>
+</div>
+{% endblock %}

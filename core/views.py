@@ -61,6 +61,54 @@ def project_list(request):
 
 
 @login_required
+def freelancer_find_work(request):
+    """Dedicated view for freelancers to browse and search for projects"""
+    if request.user.user_type != 'freelancer':
+        messages.error(request, "This page is only accessible to freelancers.")
+        return redirect('core:index')
+    
+    # Get all open projects
+    projects = Project.objects.filter(status='open')
+    
+    # Search by title or description
+    query = request.GET.get('q')
+    if query:
+        projects = projects.filter(
+            Q(title__icontains=query) | Q(description__icontains=query)
+        )
+    
+    # Filter by minimum budget
+    min_budget = request.GET.get('min_budget')
+    if min_budget:
+        try:
+            projects = projects.filter(budget__gte=float(min_budget))
+        except ValueError:
+            pass
+    
+    # Filter by maximum budget
+    max_budget = request.GET.get('max_budget')
+    if max_budget:
+        try:
+            projects = projects.filter(budget__lte=float(max_budget))
+        except ValueError:
+            pass
+    
+    # Sort by
+    sort_by = request.GET.get('sort', '-created_at')
+    if sort_by in ['-created_at', 'created_at', '-budget', 'budget']:
+        projects = projects.order_by(sort_by)
+    
+    context = {
+        'projects': projects,
+        'query': request.GET.get('q', ''),
+        'min_budget': request.GET.get('min_budget', ''),
+        'max_budget': request.GET.get('max_budget', ''),
+        'sort_by': request.GET.get('sort', '-created_at'),
+    }
+    return render(request, 'core/freelancer_project_list.html', context)
+
+
+@login_required
 def project_create(request):
     """Create a new project (clients only)"""
     if request.user.user_type != 'client':
@@ -392,3 +440,15 @@ def browse_freelancers(request):
     }
     
     return render(request, 'core/browse_freelancers.html', context)
+
+@login_required
+def proposal_list_client(request):
+    """List all proposals for a client's projects"""
+    if request.user.user_type != 'client':
+        messages.error(request, "Only clients can view this page.")
+        return redirect('core:index')
+    
+    projects = Project.objects.filter(client=request.user)
+    proposals = Proposal.objects.filter(project__in=projects)
+    
+    return render(request, 'core/proposal_list_client.html', {'proposals': proposals})

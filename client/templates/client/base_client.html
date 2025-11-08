@@ -41,7 +41,7 @@
         }
 
         .nav-link.active {
-            color: var(--client-primary) !important;
+            color: rgb(24, 31, 65) !important;
             font-weight: 600;
         }
 
@@ -153,7 +153,7 @@
                         <a href="{% url 'client:dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %} d-block">📊 Overview</a>
                         <a href="{% url 'core:project_create' %}" class="nav-link {% if request.resolver_match.url_name == 'project_create' %}active{% endif %} d-block">➕ Post New Project</a>
                         <a href="{% url 'core:project_list' %}" class="nav-link {% if request.resolver_match.url_name == 'project_list' %}active{% endif %} d-block">📁 My Projects</a>
-                        <a href="{% url 'core:project_list' %}" class="nav-link d-block">📝 Proposals ({{ pending_proposals_count|default:0 }})</a>
+                        <a href="{% url 'core:proposal_list' %}" class="nav-link d-block">📝 Proposals ({{ pending_proposals_count|default:0 }})</a>
                         <a href="{% url 'core:browse_freelancers' %}" class="nav-link {% if request.resolver_match.url_name == 'browse_freelancers' %}active{% endif %} d-block">🔍 Browse Freelancers</a>
                         <a href="{% url 'core:all_messages' %}" class="nav-link {% if request.resolver_match.url_name == 'all_messages' %}active{% endif %} d-block">💬 Messages</a>
                         <a href="#settings" class="nav-link d-block">⚙️ Settings</a>
