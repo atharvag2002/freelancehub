@@ -5,8 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}FreelanceHub{% endblock %}</title>
-    <meta name="description" content="{% block description %}Find projects, submit proposals, and manage your freelance work{% endblock %}">
+    <title>{% block title %}Client Dashboard - FreelanceHub{% endblock %}</title>
+    <meta name="description" content="{% block description %}Manage your projects, review proposals, and hire talented freelancers{% endblock %}">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -15,8 +15,8 @@
     <style>
         /* Custom styles to match your design */
         :root {
-            --primary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --primary-color: #f5576c;
+            --client-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --client-primary: #667eea;
         }
 
         body {
@@ -41,12 +41,12 @@
         }
 
         .nav-link.active {
-            color: var(--primary-color) !important;
+            color: var(--client-primary) !important;
             font-weight: 600;
         }
 
         .sidebar {
-            background: var(--primary-gradient);
+            background: var(--client-gradient);
             position: sticky;
             top: 76px;
             height: calc(100vh - 76px);
@@ -77,7 +77,6 @@
         {% block extra_css %}{% endblock %}
     </style>
 </head>
-
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light">
@@ -97,19 +96,19 @@
                     <div class="dropdown">
                         <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser"
                             data-bs-toggle="dropdown">
-                            {% if profile.profile_pic %}
+                            {% if profile and profile.profile_pic %}
                             <img src="{{ profile.profile_pic.url }}" alt="User" width="40" height="40"
                                 class="rounded-circle" style="object-fit: cover;">
                             {% else %}
-                            <img src="https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username }}&background=f5576c&color=fff"
+                            <img src="https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username }}&background=667eea&color=fff"
                                 alt="User" width="40" height="40" class="rounded-circle">
                             {% endif %}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{% url 'freelancer:profile_edit' %}">Edit Profile</a></li>
+                            <li><a class="dropdown-item" href="#">Edit Profile</a></li>
                             <li><a class="dropdown-item" href="#">Settings</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'freelancer:logout' %}">Sign out</a></li>
+                            <li><a class="dropdown-item" href="{% url 'client:logout' %}">Sign out</a></li>
                         </ul>
                     </div>
                 </div>
@@ -124,44 +123,39 @@
             <div class="col-lg-3 col-md-4 sidebar d-none d-md-block">
                 <div class="p-3">
                     <div class="profile-card text-center">
-                        {% if profile.profile_pic %}
+                        {% if profile and profile.profile_pic %}
                         <img src="{{ profile.profile_pic.url }}" alt="Profile" class="profile-img rounded-circle mb-3"
                             style="width: 80px; height: 80px; border: 3px solid rgba(255,255,255,0.3); object-fit: cover;">
                         {% else %}
-                        <img src="https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username }}&background=fff&color=f5576c&size=80"
+                        <img src="https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username }}&background=fff&color=667eea&size=80"
                             alt="Profile" class="profile-img rounded-circle mb-3"
                             style="width: 80px; height: 80px; border: 3px solid rgba(255,255,255,0.3);">
                         {% endif %}
                         <h3 class="text-white mb-1">{{ user.get_full_name|default:user.username }}</h3>
-                        {% if profile and profile.skills %}
-                        <p class="text-white-50 mb-2">{{ profile.skills|truncatewords:1 }}</p>
+                        {% if profile and profile.company_name %}
+                        <p class="text-white-50 mb-2">{{ profile.company_name }}</p>
                         {% else %}
-                        <p class="text-white-50 mb-2">Freelancer</p>
+                        <p class="text-white-50 mb-2">Client</p>
                         {% endif %}
-                        <div class="mb-2">
-                            <span class="text-white fs-5">⭐ {{ avg_rating }}</span>
-                            <span class="text-white-50 ms-1">({{ review_count }} reviews)</span>
-                        </div>
                         <div class="d-flex justify-content-around mt-3 pt-3 border-top border-white-50">
                             <div class="text-center">
-                                <div class="text-white fw-bold fs-5">{{ active_projects_count }}</div>
+                                <div class="text-white fw-bold fs-5">{{ active_projects_count|default:0 }}</div>
                                 <div class="text-white-50 small">Active</div>
                             </div>
                             <div class="text-center">
-                                <div class="text-white fw-bold fs-5">{{ completed_projects_count }}</div>
+                                <div class="text-white fw-bold fs-5">{{ completed_projects_count|default:0 }}</div>
                                 <div class="text-white-50 small">Completed</div>
                             </div>
                         </div>
                     </div>
 
                     <nav class="sidebar-nav">
-                        <a href="{% url 'freelancer:dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %} d-block">📊 Overview</a>
-                        <a href="{% url 'core:project_list' %}" class="nav-link {% if request.resolver_match.url_name == 'project_list' %}active{% endif %} d-block">🔍 Find Work</a>
-                        <a href="{% url 'core:proposal_list' %}" class="nav-link {% if request.resolver_match.url_name == 'proposal_list' %}active{% endif %} d-block">📝 My Proposals ({{ pending_proposals_count }})</a>
-                        <a href="#active-jobs" class="nav-link d-block">💼 Active Jobs ({{ active_projects_count }})</a>
-                        <a href="#earnings" class="nav-link d-block">💰 Earnings</a>
+                        <a href="{% url 'client:dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %} d-block">📊 Overview</a>
+                        <a href="{% url 'core:project_create' %}" class="nav-link {% if request.resolver_match.url_name == 'project_create' %}active{% endif %} d-block">➕ Post New Project</a>
+                        <a href="{% url 'core:project_list' %}" class="nav-link {% if request.resolver_match.url_name == 'project_list' %}active{% endif %} d-block">📁 My Projects</a>
+                        <a href="{% url 'core:project_list' %}" class="nav-link d-block">📝 Proposals ({{ pending_proposals_count|default:0 }})</a>
+                        <a href="{% url 'core:browse_freelancers' %}" class="nav-link {% if request.resolver_match.url_name == 'browse_freelancers' %}active{% endif %} d-block">🔍 Browse Freelancers</a>
                         <a href="{% url 'core:all_messages' %}" class="nav-link {% if request.resolver_match.url_name == 'all_messages' %}active{% endif %} d-block">💬 Messages</a>
-                        <a href="#portfolio" class="nav-link d-block">🎨 Portfolio</a>
                         <a href="#settings" class="nav-link d-block">⚙️ Settings</a>
                     </nav>
                 </div>
@@ -187,21 +181,21 @@
                     </a>
                 </div>
                 <div class="col-3">
-                    <a href="{% url 'freelancer:dashboard' %}" class="text-decoration-none d-block" style="color: #f5576c;">
+                    <a href="{% url 'client:dashboard' %}" class="text-decoration-none d-block" style="color: #667eea;">
                         <div>📊</div>
                         <small>Dashboard</small>
                     </a>
                 </div>
                 <div class="col-3">
-                    <a href="{% url 'core:project_list' %}" class="text-decoration-none text-muted d-block">
-                        <div>🔍</div>
-                        <small>Find Work</small>
+                    <a href="{% url 'core:all_messages' %}" class="text-decoration-none text-muted d-block">
+                        <div>💬</div>
+                        <small>Messages</small>
                     </a>
                 </div>
                 <div class="col-3">
-                    <a href="{% url 'core:proposal_list' %}" class="text-decoration-none text-muted d-block">
-                        <div>📝</div>
-                        <small>Proposals</small>
+                    <a href="{% url 'core:project_list' %}" class="text-decoration-none text-muted d-block">
+                        <div>📁</div>
+                        <small>Projects</small>
                     </a>
                 </div>
             </div>
@@ -214,3 +208,4 @@
     {% block extra_js %}{% endblock %}
 </body>
 </html>
+

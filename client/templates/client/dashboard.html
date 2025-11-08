@@ -1,514 +1,307 @@
+{% extends 'client/base_client.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Dashboard - FreelanceHub</title>
-    <meta name="description" content="Manage your projects, review proposals, and hire talented freelancers">
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/style1.css' %}">
-    
-    <style>
-        /* Custom styles to match your design */
-        :root {
-            --client-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --client-primary: #667eea;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-        }
-        
-        .navbar {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-        }
-        
-        .logo {
-            font-weight: bold;
-            font-size: 1.5rem;
-            color: #1a1a1a;
-            text-decoration: none;
-        }
-        
-        .nav-link.active {
-            color: var(--client-primary) !important;
-            font-weight: 600;
-        }
-        
-        .sidebar {
-            background: var(--client-gradient);
-            position: sticky;
-            top: 76px;
-            height: calc(100vh - 76px);
-            overflow-y: auto;
-        }
-        
-        .sidebar-nav .nav-link {
-            color: rgba(255,255,255,0.9);
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            margin-bottom: 0.25rem;
-        }
-        
-        .sidebar-nav .nav-link:hover, .sidebar-nav .nav-link.active {
-            background: rgba(255,255,255,0.2);
-            color: white;
-        }
-        
-        .sidebar-nav .nav-link.active {
-            background: rgba(255,255,255,0.2);
-        }
-        
-        .profile-card {
-            background: rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            backdrop-filter: blur(10px);
-        }
-        
-        .stats-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            padding: 1.5rem;
-            height: 100%;
-        }
-        
-        .proposal-card, .project-card {
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 1.5rem;
-            transition: all 0.3s;
-        }
-        
-        .proposal-card:hover, .project-card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
-        }
-        
-        .status-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-        
-        .progress-bar-custom {
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            height: 8px;
-            border-radius: 10px;
-        }
-        
-        .btn-primary-custom {
-            background: var(--client-primary);
-            border-color: var(--client-primary);
-            color: white;
-        }
-        
-        .btn-primary-custom:hover {
-            background: #5a6fd8;
-            border-color: #5a6fd8;
-        }
-        
-        .btn-outline-custom {
-            border-color: var(--client-primary);
-            color: var(--client-primary);
-        }
-        
-        .btn-outline-custom:hover {
-            background: var(--client-primary);
-            color: white;
-        }
-        
-        .quick-actions-section {
-            background: var(--client-gradient);
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-        
-        .btn-hero {
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            border: none;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        
-        .btn-hero:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        
-        .freelancer-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-        }
-        
-        /* Mobile adjustments */
-        @media (max-width: 768px) {
-            .sidebar {
-                position: relative;
-                top: 0;
-                height: auto;
-            }
-            
-            .navbar-collapse {
-                background: white;
-                padding: 1rem;
-                border-radius: 0 0 8px 8px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            }
-            
-            .profile-img {
-                width: 60px !important;
-                height: 60px !important;
-            }
-            
-            .proposal-card .d-flex, .project-card .d-flex {
-                flex-direction: column;
-            }
-            
-            .proposal-card .btn-group, .project-card .btn-group {
-                width: 100%;
-                margin-top: 1rem;
-            }
-            
-            .proposal-card .btn-group .btn, .project-card .btn-group .btn {
-                flex: 1;
-            }
-            
-            .freelancer-avatar {
-                width: 50px;
-                height: 50px;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .stats-card {
-                padding: 1rem;
-            }
-            
-            .proposal-card, .project-card {
-                padding: 1rem;
-            }
-            
-            .btn-hero {
-                padding: 0.6rem 1rem;
-                font-size: 0.9rem;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
-            <a class="navbar-brand logo" href="{% url 'core:index' %}">FreelanceHub</a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'core:index' %}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'client:dashboard' %}">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'core:all_messages' %}">Messages</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'core:project_list' %}">My Projects</a>
-                    </li>
-                </ul>
-                
-                <div class="d-flex align-items-center">
-                    <button class="btn btn-outline-secondary me-2 d-none d-md-block">Notifications</button>
-                    <div class="dropdown">
-                        <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown">
-                            {% if profile.profile_pic %}
-                                <img src="{{ profile.profile_pic.url }}" alt="User" width="40" height="40" class="rounded-circle" style="object-fit: cover;">
-                            {% else %}
-                                <img src="https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username }}&background=667eea&color=fff" alt="User" width="40" height="40" class="rounded-circle">
-                            {% endif %}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#">Profile</a></li>
-                            <li><a class="dropdown-item" href="#">Settings</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'client:logout' %}">Sign out</a></li>
-                        </ul>
-                    </div>
+{% block title %}Client Dashboard - FreelanceHub{% endblock %}
+
+{% block content %}
+<!-- Stats Overview -->
+<div class="mb-4">
+    <h1 class="h2 mb-1">Welcome back, {{ user.get_full_name|default:user.username }}! 👋</h1>
+    <p class="text-muted mb-4">Here's what's happening with your projects today.</p>
+
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="fs-2">📊</span>
+                    <span class="status-badge bg-primary bg-opacity-10 text-primary">Active</span>
                 </div>
+                <h3 class="fw-bold mb-1">{{ active_projects_count }}</h3>
+                <p class="text-muted small mb-0">Active Projects</p>
             </div>
         </div>
-    </nav>
-
-    <!-- Dashboard Container -->
-    <div class="container-fluid mt-5 pt-3">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-lg-3 col-md-4 sidebar d-none d-md-block">
-                <div class="p-3">
-                    <div class="profile-card text-center">
-                        {% if profile.profile_pic %}
-                            <img src="{{ profile.profile_pic.url }}" alt="Profile" class="profile-img rounded-circle mb-3" style="width: 80px; height: 80px; border: 3px solid rgba(255,255,255,0.3); object-fit: cover;">
-                        {% else %}
-                            <img src="https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username }}&background=fff&color=667eea&size=80" alt="Profile" class="profile-img rounded-circle mb-3" style="width: 80px; height: 80px; border: 3px solid rgba(255,255,255,0.3);">
-                        {% endif %}
-                        <h3 class="text-white mb-1">{{ user.get_full_name|default:user.username }}</h3>
-                        {% if profile and profile.company_name %}
-                            <p class="text-white-50 mb-2">{{ profile.company_name }}</p>
-                        {% else %}
-                            <p class="text-white-50 mb-2">Client</p>
-                        {% endif %}
-                        <div class="d-flex justify-content-around mt-3 pt-3 border-top border-white-50">
-                            <div class="text-center">
-                                <div class="text-white fw-bold fs-5">{{ active_projects_count }}</div>
-                                <div class="text-white-50 small">Active</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-white fw-bold fs-5">{{ completed_projects_count }}</div>
-                                <div class="text-white-50 small">Completed</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <nav class="sidebar-nav">
-                        <a href="#overview" class="nav-link active d-block">📊 Overview</a>
-                        <a href="{% url 'core:project_create' %}" class="nav-link d-block">➕ Post New Project</a>
-                        <a href="{% url 'core:project_list' %}" class="nav-link d-block">📁 My Projects</a>
-                        <a href="#proposals" class="nav-link d-block">📝 Proposals ({{ pending_proposals_count }})</a>
-                        <a href="#hired-freelancers" class="nav-link d-block">👥 Hired Freelancers</a>
-                        <a href="#payments" class="nav-link d-block">💳 Payments</a>
-                        <a href="{% url 'core:all_messages' %}" class="nav-link d-block">💬 Messages</a>
-                        <a href="#settings" class="nav-link d-block">⚙️ Settings</a>
-                    </nav>
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="fs-2">📝</span>
+                    <span class="status-badge bg-warning bg-opacity-10 text-warning">New</span>
                 </div>
+                <h3 class="fw-bold mb-1">{{ pending_proposals_count }}</h3>
+                <p class="text-muted small mb-0">Pending Proposals</p>
             </div>
-
-            <!-- Main Content -->
-            <div class="col-lg-9 col-md-8">
-                <div class="p-3">
-                    <!-- Stats Overview -->
-                    <div class="mb-4">
-                        <h1 class="h2 mb-1">Welcome back, {{ user.get_full_name|default:user.username }}! 👋</h1>
-                        <p class="text-muted mb-4">Here's what's happening with your projects today.</p>
-
-                        <div class="row g-3 mb-4">
-                            <div class="col-xl-3 col-md-6">
-                                <div class="stats-card">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <span class="fs-2">📊</span>
-                                        <span class="status-badge bg-primary bg-opacity-10 text-primary">Active</span>
-                                    </div>
-                                    <h3 class="fw-bold mb-1">{{ active_projects_count }}</h3>
-                                    <p class="text-muted small mb-0">Active Projects</p>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-md-6">
-                                <div class="stats-card">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <span class="fs-2">📝</span>
-                                        <span class="status-badge bg-warning bg-opacity-10 text-warning">New</span>
-                                    </div>
-                                    <h3 class="fw-bold mb-1">{{ pending_proposals_count }}</h3>
-                                    <p class="text-muted small mb-0">Pending Proposals</p>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-md-6">
-                                <div class="stats-card">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <span class="fs-2">👥</span>
-                                        <span class="status-badge bg-success bg-opacity-10 text-success">Active</span>
-                                    </div>
-                                    <h3 class="fw-bold mb-1">{{ hired_freelancers_count }}</h3>
-                                    <p class="text-muted small mb-0">Hired Freelancers</p>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-md-6">
-                                <div class="stats-card">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <span class="fs-2">💰</span>
-                                        <span class="status-badge bg-info bg-opacity-10 text-info">Total</span>
-                                    </div>
-                                    <h3 class="fw-bold mb-1">${{ total_spent|floatformat:2 }}</h3>
-                                    <p class="text-muted small mb-0">Total Spent</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Quick Actions -->
-                    <div class="quick-actions-section p-4 mb-4">
-                        <h2 class="text-white mb-3">Quick Actions</h2>
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <a href="{% url 'core:project_create' %}" class="btn-hero w-100 d-block text-center text-decoration-none" style="background: white; color: #667eea;">➕ Post New Project</a>
-                            </div>
-                            <div class="col-md-4">
-                                <a href="{% url 'core:browse_freelancers' %}" class="btn-hero w-100 d-block text-center text-decoration-none text-white" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);">🔍 Browse Freelancers</a>
-                            </div>
-                            <div class="col-md-4">
-                                <button class="btn-hero w-100 text-white" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);" onclick="alert('View Reports feature - to be implemented')">📈 View Reports</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Recent Proposals -->
-                    <div class="bg-white rounded-3 shadow-sm p-4 mb-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h2 class="h4 mb-0">Recent Proposals</h2>
-                            {% if pending_proposals_count > 0 %}
-                            <a href="{% url 'core:project_list' %}" class="text-decoration-none fw-bold" style="color: #667eea;">View All →</a>
-                            {% endif %}
-                        </div>
-
-                        <div class="row g-3">
-                            {% if recent_proposals %}
-                                {% for proposal in recent_proposals %}
-                                <div class="col-12">
-                                    <div class="proposal-card">
-                                        <div class="d-md-flex justify-content-between align-items-start mb-3">
-                                            <div class="d-flex align-items-start flex-grow-1">
-                                                {% if proposal.freelancer.freelancerprofile.profile_pic %}
-                                                    <img src="{{ proposal.freelancer.freelancerprofile.profile_pic.url }}" alt="Freelancer" class="freelancer-avatar me-3">
-                                                {% else %}
-                                                    <img src="https://ui-avatars.com/api/?name={{ proposal.freelancer.get_full_name|default:proposal.freelancer.username }}&background=667eea&color=fff&size=60" alt="Freelancer" class="freelancer-avatar me-3">
-                                                {% endif %}
-                                                <div class="flex-grow-1">
-                                                    <h3 class="h5 mb-1">{{ proposal.freelancer.get_full_name|default:proposal.freelancer.username }}</h3>
-                                                    {% if proposal.freelancer.freelancerprofile %}
-                                                        <p class="text-muted small mb-2">{{ proposal.freelancer.freelancerprofile.bio|truncatewords:5|default:"Freelancer" }}</p>
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                            <div class="text-md-end mt-2 mt-md-0">
-                                                <div class="h4 fw-bold mb-1" style="color: #667eea;">${{ proposal.bid_amount|floatformat:2 }}</div>
-                                                <span class="status-badge bg-warning bg-opacity-10 text-warning">{{ proposal.get_status_display }}</span>
-                                            </div>
-                                        </div>
-                                        <p class="fw-medium mb-2">Project: {{ proposal.project.title }}</p>
-                                        <p class="text-muted small mb-3">{{ proposal.cover_letter|truncatewords:30 }}</p>
-                                        <div class="d-flex flex-wrap gap-2">
-                                            <form method="post" action="{% url 'core:proposal_accept' proposal.id %}" class="flex-fill">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn btn-primary-custom w-100">✓ Accept Proposal</button>
-                                            </form>
-                                            <a href="{% url 'core:project_detail' proposal.project.id %}" class="btn btn-outline-custom flex-fill">View Details</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            {% else %}
-                                <div class="col-12">
-                                    <p class="text-muted text-center py-4">No pending proposals at the moment.</p>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <!-- Active Projects -->
-                    <div class="bg-white rounded-3 shadow-sm p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h2 class="h4 mb-0">Active Projects</h2>
-                            <a href="{% url 'core:project_create' %}" class="btn btn-primary-custom">+ New Project</a>
-                        </div>
-
-                        <div class="row g-3">
-                            {% if active_projects %}
-                                {% for project in active_projects %}
-                                <div class="col-12">
-                                    <div class="project-card">
-                                        <div class="d-md-flex justify-content-between align-items-start mb-3">
-                                            <div class="flex-grow-1">
-                                                <h3 class="h5 mb-2">{{ project.title }}</h3>
-                                                <p class="text-muted mb-3">{{ project.description|truncatewords:15 }}</p>
-                                                <div class="d-flex flex-wrap gap-3 text-muted small">
-                                                    {% for proposal in project.proposals.all %}
-                                                        {% if proposal.status == 'accepted' %}
-                                                            <span>👤 {{ proposal.freelancer.get_full_name|default:proposal.freelancer.username }}</span>
-                                                            <span>💰 ${{ proposal.bid_amount|floatformat:2 }}</span>
-                                                        {% endif %}
-                                                    {% empty %}
-                                                        <span>💰 Budget: ${{ project.budget|floatformat:2 }}</span>
-                                                    {% endfor %}
-                                                    {% if not project.proposals.all %}
-                                                        <span>💰 Budget: ${{ project.budget|floatformat:2 }}</span>
-                                                    {% endif %}
-                                                    <span>📅 Started: {{ project.created_at|date:"M d, Y" }}</span>
-                                                </div>
-                                            </div>
-                                            <span class="status-badge bg-success bg-opacity-10 text-success mt-2 mt-md-0">{{ project.get_status_display }}</span>
-                                        </div>
-                                        <div class="d-flex flex-wrap gap-2">
-                                            <a href="{% url 'core:project_detail' project.id %}" class="btn btn-outline-custom flex-fill">View Details</a>
-                                            <a href="{% url 'core:project_proposals' project.id %}" class="btn btn-outline-secondary">📝 Proposals</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            {% else %}
-                                <div class="col-12">
-                                    <p class="text-muted text-center py-4">No active projects. <a href="{% url 'core:project_create' %}">Create your first project!</a></p>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="fs-2">👥</span>
+                    <span class="status-badge bg-success bg-opacity-10 text-success">Active</span>
                 </div>
+                <h3 class="fw-bold mb-1">{{ hired_freelancers_count }}</h3>
+                <p class="text-muted small mb-0">Hired Freelancers</p>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="fs-2">💰</span>
+                    <span class="status-badge bg-info bg-opacity-10 text-info">Total</span>
+                </div>
+                <h3 class="fw-bold mb-1">${{ total_spent|floatformat:2 }}</h3>
+                <p class="text-muted small mb-0">Total Spent</p>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Mobile Bottom Navigation (for small screens) -->
-    <div class="d-block d-md-none fixed-bottom bg-white border-top p-2">
-        <div class="container">
-            <div class="row text-center">
-                <div class="col-3">
-                    <a href="{% url 'core:index' %}" class="text-decoration-none text-muted d-block">
-                        <div>🏠</div>
-                        <small>Home</small>
-                    </a>
-                </div>
-                <div class="col-3">
-                    <a href="{% url 'client:dashboard' %}" class="text-decoration-none d-block" style="color: #667eea;">
-                        <div>📊</div>
-                        <small>Dashboard</small>
-                    </a>
-                </div>
-                <div class="col-3">
-                    <a href="{% url 'core:all_messages' %}" class="text-decoration-none text-muted d-block">
-                        <div>💬</div>
-                        <small>Messages</small>
-                    </a>
-                </div>
-                <div class="col-3">
-                    <a href="{% url 'core:project_list' %}" class="text-decoration-none text-muted d-block">
-                        <div>📁</div>
-                        <small>Projects</small>
-                    </a>
-                </div>
-            </div>
+<!-- Quick Actions -->
+<div class="quick-actions-section p-4 mb-4">
+    <h2 class="text-white mb-3">Quick Actions</h2>
+    <div class="row g-3">
+        <div class="col-md-4">
+            <a href="{% url 'core:project_create' %}" class="btn-hero w-100 d-block text-center text-decoration-none" style="background: white; color: #667eea;">➕ Post New Project</a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'core:browse_freelancers' %}" class="btn-hero w-100 d-block text-center text-decoration-none text-white" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);">🔍 Browse Freelancers</a>
+        </div>
+        <div class="col-md-4">
+            <button class="btn-hero w-100 text-white" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);" onclick="alert('View Reports feature - to be implemented')">📈 View Reports</button>
         </div>
     </div>
+</div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{% static 'js/script1.js' %}"></script>
-</body>
-</html>
+<!-- Recent Proposals -->
+<div class="bg-white rounded-3 shadow-sm p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4 mb-0">Recent Proposals</h2>
+        {% if pending_proposals_count > 0 %}
+        <a href="{% url 'core:project_list' %}" class="text-decoration-none fw-bold" style="color: #667eea;">View All →</a>
+        {% endif %}
+    </div>
+
+    <div class="row g-3">
+        {% if recent_proposals %}
+            {% for proposal in recent_proposals %}
+            <div class="col-12">
+                <div class="proposal-card">
+                    <div class="d-md-flex justify-content-between align-items-start mb-3">
+                        <div class="d-flex align-items-start flex-grow-1">
+                            {% if proposal.freelancer.freelancerprofile.profile_pic %}
+                                <img src="{{ proposal.freelancer.freelancerprofile.profile_pic.url }}" alt="Freelancer" class="freelancer-avatar me-3">
+                            {% else %}
+                                <img src="https://ui-avatars.com/api/?name={{ proposal.freelancer.get_full_name|default:proposal.freelancer.username }}&background=667eea&color=fff&size=60" alt="Freelancer" class="freelancer-avatar me-3">
+                            {% endif %}
+                            <div class="flex-grow-1">
+                                <h3 class="h5 mb-1">{{ proposal.freelancer.get_full_name|default:proposal.freelancer.username }}</h3>
+                                {% if proposal.freelancer.freelancerprofile %}
+                                    <p class="text-muted small mb-2">{{ proposal.freelancer.freelancerprofile.bio|truncatewords:5|default:"Freelancer" }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="text-md-end mt-2 mt-md-0">
+                            <div class="h4 fw-bold mb-1" style="color: #667eea;">${{ proposal.bid_amount|floatformat:2 }}</div>
+                            <span class="status-badge bg-warning bg-opacity-10 text-warning">{{ proposal.get_status_display }}</span>
+                        </div>
+                    </div>
+                    <p class="fw-medium mb-2">Project: {{ proposal.project.title }}</p>
+                    <p class="text-muted small mb-3">{{ proposal.cover_letter|truncatewords:30 }}</p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <form method="post" action="{% url 'core:proposal_accept' proposal.id %}" class="flex-fill">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary-custom w-100">✓ Accept Proposal</button>
+                        </form>
+                        <a href="{% url 'core:project_detail' proposal.project.id %}" class="btn btn-outline-custom flex-fill">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <p class="text-muted text-center py-4">No pending proposals at the moment.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Active Projects -->
+<div class="bg-white rounded-3 shadow-sm p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4 mb-0">Active Projects</h2>
+        <a href="{% url 'core:project_create' %}" class="btn btn-primary-custom">+ New Project</a>
+    </div>
+
+    <div class="row g-3">
+        {% if active_projects %}
+            {% for project in active_projects %}
+            <div class="col-12">
+                <div class="project-card">
+                    <div class="d-md-flex justify-content-between align-items-start mb-3">
+                        <div class="flex-grow-1">
+                            <h3 class="h5 mb-2">{{ project.title }}</h3>
+                            <p class="text-muted mb-3">{{ project.description|truncatewords:15 }}</p>
+                            <div class="d-flex flex-wrap gap-3 text-muted small">
+                                {% for proposal in project.proposals.all %}
+                                    {% if proposal.status == 'accepted' %}
+                                        <span>👤 {{ proposal.freelancer.get_full_name|default:proposal.freelancer.username }}</span>
+                                        <span>💰 ${{ proposal.bid_amount|floatformat:2 }}</span>
+                                    {% endif %}
+                                {% empty %}
+                                    <span>💰 Budget: ${{ project.budget|floatformat:2 }}</span>
+                                {% endfor %}
+                                {% if not project.proposals.all %}
+                                    <span>💰 Budget: ${{ project.budget|floatformat:2 }}</span>
+                                {% endif %}
+                                <span>📅 Started: {{ project.created_at|date:"M d, Y" }}</span>
+                            </div>
+                        </div>
+                        <span class="status-badge bg-success bg-opacity-10 text-success mt-2 mt-md-0">{{ project.get_status_display }}</span>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{% url 'core:project_detail' project.id %}" class="btn btn-outline-custom flex-fill">View Details</a>
+                        <a href="{% url 'core:project_proposals' project.id %}" class="btn btn-outline-secondary">📝 Proposals</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <p class="text-muted text-center py-4">No active projects. <a href="{% url 'core:project_create' %}">Create your first project!</a></p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+.stats-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    height: 100%;
+}
+
+.proposal-card, .project-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: all 0.3s;
+}
+
+.proposal-card:hover, .project-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.progress-bar-custom {
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    height: 8px;
+    border-radius: 10px;
+}
+
+.btn-primary-custom {
+    background: var(--client-primary);
+    border-color: var(--client-primary);
+    color: white;
+}
+
+.btn-primary-custom:hover {
+    background: #5a6fd8;
+    border-color: #5a6fd8;
+}
+
+.btn-outline-custom {
+    border-color: var(--client-primary);
+    color: var(--client-primary);
+}
+
+.btn-outline-custom:hover {
+    background: var(--client-primary);
+    color: white;
+}
+
+.quick-actions-section {
+    background: var(--client-gradient);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-hero {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-hero:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.freelancer-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        position: relative;
+        top: 0;
+        height: auto;
+    }
+    
+    .navbar-collapse {
+        background: white;
+        padding: 1rem;
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .profile-img {
+        width: 60px !important;
+        height: 60px !important;
+    }
+    
+    .proposal-card .d-flex, .project-card .d-flex {
+        flex-direction: column;
+    }
+    
+    .proposal-card .btn-group, .project-card .btn-group {
+        width: 100%;
+        margin-top: 1rem;
+    }
+    
+    .proposal-card .btn-group .btn, .project-card .btn-group .btn {
+        flex: 1;
+    }
+    
+    .freelancer-avatar {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+@media (max-width: 576px) {
+    .stats-card {
+        padding: 1rem;
+    }
+    
+    .proposal-card, .project-card {
+        padding: 1rem;
+    }
+    
+    .btn-hero {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+{% endblock %}

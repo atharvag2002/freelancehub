@@ -94,6 +94,40 @@ def freelancer_dashboard(request):
     }
     return render(request, 'freelancer/freel-dashboard-new.html', context)
 
+@login_required
+def profile_edit(request):
+    if not request.user.user_type == 'freelancer':
+        return redirect('core:index')
+    
+    try:
+        profile = request.user.freelancerprofile
+    except:
+        return redirect('freelancer:dashboard')
+
+    if request.method == 'POST':
+        # Update user info
+        user = request.user
+        user.first_name = request.POST.get('first_name', '').strip()
+        user.last_name = request.POST.get('last_name', '').strip()
+        user.email = request.POST.get('email', '').strip()
+        user.save()
+
+        # Update profile info
+        profile.skills = request.POST.get('skills', '').strip()
+        profile.bio = request.POST.get('bio', '').strip()
+
+        # Handle profile picture upload
+        if 'profile_pic' in request.FILES:
+            profile.profile_pic = request.FILES['profile_pic']
+
+        profile.save()
+        return redirect('freelancer:profile_edit')
+
+    return render(request, 'freelancer/profile-edit.html', {
+        'user': request.user,
+        'profile': profile
+    })
+
 def freelancer_logout(request):
     logout(request)
     return redirect('core:index')

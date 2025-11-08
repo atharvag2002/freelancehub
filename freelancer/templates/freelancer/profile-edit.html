@@ -1,0 +1,351 @@
+{% extends 'base_freelancer.html' %}
+{% load static %}
+
+{% block title %}Edit Profile - FreelanceHub{% endblock %}
+
+{% block extra_css %}
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+<style>
+    .profile-edit-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .main-card {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8));
+        backdrop-filter: blur(10px);
+        border-radius: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .profile-pic-section {
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .profile-pic-container {
+        position: relative;
+        width: 180px;
+        height: 180px;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-pic {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .profile-pic-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+        padding: 2rem 1rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .profile-pic-overlay:hover {
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+    }
+
+    .profile-pic-overlay i {
+        color: white;
+        font-size: 1.5rem;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+
+    .profile-info {
+        flex-grow: 1;
+    }
+
+    .profile-name {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .form-section {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: var(--primary-color);
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid rgba(245, 87, 108, 0.1);
+    }
+
+    .section-title i {
+        font-size: 1.25rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control {
+        border: 1.5px solid #e5e7eb;
+        border-radius: 0.75rem;
+        padding: 0.875rem 1rem;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+        width: 100%;
+        background-color: #f8f9fa;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        background-color: white;
+        box-shadow: 0 0 0 4px rgba(245, 87, 108, 0.1);
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .skills-container {
+        position: relative;
+    }
+
+    .preview-skills {
+        margin-top: 0.75rem;
+        min-height: 40px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .skill-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--primary-gradient);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        box-shadow: 0 2px 6px rgba(245, 87, 108, 0.2);
+        animation: fadeIn 0.3s ease;
+    }
+
+    .skill-tag i {
+        font-size: 0.75rem;
+    }
+
+    .form-hint {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-top: 0.5rem;
+    }
+
+    .btn-save {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+    }
+
+    .btn-save:active {
+        transform: translateY(0);
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(5px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Success Message Styles */
+    .alert-success {
+        background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+        color: #05543e;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+            gap: 1.5rem;
+        }
+
+        .profile-pic-container {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+        }
+
+        .btn-save {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-edit-container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-pic-container">
+                <img src="{{ profile.profile_pic.url|default:'https://ui-avatars.com/api/?name='|add:user.username|add:'&background=random' }}" 
+                     alt="Profile Picture" class="profile-pic" id="profilePicPreview">
+                <label for="profilePicInput" class="profile-pic-overlay">
+                    <i class="fas fa-camera"></i>
+                </label>
+            </div>
+            <h2 class="h3 mb-1">{{ user.get_full_name|default:user.username }}</h2>
+            <p class="text-muted">Freelancer</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" id="profilePicInput" name="profile_pic" style="display: none;" accept="image/*">
+            
+            <div class="form-section">
+                <h3>Basic Information</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">First Name</label>
+                            <input type="text" class="form-control" name="first_name" value="{{ user.first_name }}" placeholder="Your first name">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" class="form-control" name="last_name" value="{{ user.last_name }}" placeholder="Your last name">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" value="{{ user.email }}" placeholder="Your email">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Professional Details</h3>
+                <div class="form-group">
+                    <label class="form-label">Skills</label>
+                    <input type="text" class="form-control" name="skills" value="{{ profile.skills }}" 
+                           placeholder="Enter your skills (comma-separated)" id="skillsInput">
+                    <div class="preview-skills" id="skillsPreview"></div>
+                    <small class="text-muted">Example: Web Development, Python, UI Design</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bio</label>
+                    <textarea class="form-control" name="bio" placeholder="Tell us about yourself and your experience...">{{ profile.bio }}</textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-save">Save Changes</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('profilePicInput').addEventListener('change', function(e) {
+    if (this.files && this.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('profilePicPreview').src = e.target.result;
+        };
+        reader.readAsDataURL(this.files[0]);
+    }
+});
+
+// Skills preview functionality
+const skillsInput = document.getElementById('skillsInput');
+const skillsPreview = document.getElementById('skillsPreview');
+
+function updateSkillsPreview() {
+    const skills = skillsInput.value.split(',').filter(skill => skill.trim());
+    skillsPreview.innerHTML = skills.map(skill => 
+        `<span class="skill-tag">${skill.trim()}</span>`
+    ).join('');
+}
+
+skillsInput.addEventListener('input', updateSkillsPreview);
+updateSkillsPreview(); // Initial preview
+</script>
+{% endblock %}
